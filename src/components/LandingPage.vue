@@ -8,11 +8,7 @@
           <!-- Left side: Logo and text -->
           <div class="header-left">
             <div class="logo-section">
-              <img
-                :src="require('@/assets/naga-city-logo.png')"
-                alt="Naga City Logo"
-                class="logo"
-              />
+              <img :src="require('@/assets/naga-city-logo.png')" alt="Naga City Logo" class="logo" />
               <div class="header-text">
                 <div class="republic-text">Republic of the Philippines</div>
                 <div class="text-divider"></div>
@@ -36,20 +32,27 @@
     <!-- Sub Navigation -->
     <div class="sub-nav">
       <div class="sub-nav-container">
-        <button class="sub-nav-btn">View Available Stall</button>
+        <button class="sub-nav-btn" @click="toggleAvailableStalls">
+          View Available Stall
+        </button>
         <button class="sub-nav-btn">Naga City People's Mall</button>
         <button class="sub-nav-btn">Satellite Market</button>
       </div>
     </div>
 
+    <!--Pop-up added for available stalls 10/08/25-->
+    <transition name="popup">
+      <div v-if="showAvailableStalls" class="popup-overlay">
+        <div class="popup-content">
+          <AvailableStalls />
+        </div>
+      </div>
+    </transition>
+
     <!-- Hero Section - Rent The Perfect Stall -->
     <section class="hero-section">
       <div class="hero-background">
-        <img
-          :src="require('@/assets/market.png')"
-          alt="Naga People's Mall"
-          class="hero-image"
-        />
+        <img :src="require('@/assets/market.png')" alt="Naga People's Mall" class="hero-image" />
         <div class="hero-overlay"></div>
       </div>
       <div class="hero-content">
@@ -96,11 +99,7 @@
         <div class="content-right">
           <div class="vendor-illustration">
             <!-- Vendor cart illustration will be placed here -->
-            <img
-              :src="require('@/assets/vendor.png')"
-              alt="Vendor Cart"
-              class="illustration-image"
-            />
+            <img :src="require('@/assets/vendor.png')" alt="Vendor Cart" class="illustration-image" />
           </div>
         </div>
       </div>
@@ -112,11 +111,7 @@
         <div class="content-left">
           <div class="compliance-illustration">
             <!-- Compliance dashboard illustration will be placed here -->
-            <img
-              :src="require('@/assets/reporting.png')"
-              alt="Compliance Dashboard"
-              class="illustration-image"
-            />
+            <img :src="require('@/assets/reporting.png')" alt="Compliance Dashboard" class="illustration-image" />
           </div>
         </div>
         <div class="content-right">
@@ -165,18 +160,26 @@
 </template>
 
 <script>
+import AvailableStalls from './available_stalls/AvailableStalls.vue'
+
 export default {
   name: "NagaCityLanding",
+  components: {
+    AvailableStalls
+  },
   data() {
     return {
-      // Add reactive data here if needed
+      showAvailableStalls: false
     };
   },
   methods: {
-    // Add methods here
-  },
+    toggleAvailableStalls() {
+      this.showAvailableStalls = !this.showAvailableStalls;
+    }
+  }
 };
 </script>
+
 
 <style scoped>
 * {
@@ -294,7 +297,7 @@ export default {
   background: none;
   border: none;
   color: #666;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 500;
   cursor: pointer;
   padding: 8px 16px;
@@ -334,13 +337,11 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    to right,
-    rgb(255, 255, 255) 0%,
-    rgb(255, 255, 255) 35%,
-    rgba(255, 255, 255, 0) 60%,
-    transparent 100%
-  );
+  background: linear-gradient(to right,
+      rgb(255, 255, 255) 0%,
+      rgb(255, 255, 255) 35%,
+      rgba(255, 255, 255, 0) 60%,
+      transparent 100%);
 }
 
 .hero-content {
@@ -610,6 +611,7 @@ export default {
 }
 
 @media (max-width: 480px) {
+
   .hero-title,
   .hero-subtitle {
     font-size: 2rem;
@@ -622,5 +624,23 @@ export default {
   .section-subtitle {
     font-size: 1.3rem;
   }
+}
+
+/* Animation for popup fade & scale added: 10/08.25 */
+.popup-enter-active,
+.popup-leave-active {
+  transition: all 0.6s ease;
+}
+
+.popup-enter-from,
+.popup-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.popup-enter-to,
+.popup-leave-from {
+  opacity: 1;
+  transform: scale(1);
 }
 </style>
