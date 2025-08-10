@@ -16,12 +16,15 @@
                         <p>{{ stall.location }}</p>
                         <div class="size-btn-row">
                             <p>{{ stall.size }}</p>
-                            <button class="apply-btn">APPLY NOW!</button>
+                            <button class="apply-btn" @click="openApplyForm(stall)">APPLY NOW!</button>
                         </div>
+
                         <p>{{ stall.market }}</p>
                         <p class="stall-description">{{ stall.description }}</p>
                     </div>
 
+                    <!-- Popup Application Form -->
+                    <Apply v-if="showApplyForm" :stall="selectedStall" @close="closeApplyForm" />
                 </div>
             </div>
         </div>
@@ -29,8 +32,12 @@
 </template>
 
 <script>
+import Apply from '../apply/PersonalInformation.vue';
 export default {
     name: "AvailableStalls",
+    components: {
+        Apply,
+    },
     data() {
         return {
             stalls: [
@@ -88,8 +95,19 @@ export default {
                     market: "Satellite Market",
                     description: "Good spot for local delicacies and small retail items."
                 },
-            ]
+            ],
+            showApplyForm: false,
+            selectedStall: null,
         };
+    }, methods: {
+        openApplyForm(stall) {
+            this.selectedStall = stall;
+            this.showApplyForm = true;
+        },
+        closeApplyForm() {
+            this.showApplyForm = false;
+            this.selectedStall = null;
+        }
     }
 };
 </script>

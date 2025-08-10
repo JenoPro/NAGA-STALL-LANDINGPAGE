@@ -1,10 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LandingPage from "../components/LandingPage.vue";
-import AvailableStalls from "../components/available_stalls/AvailableStalls.vue";
 
 const routes = [
   { path: "/", component: LandingPage },
-  { path: "/available-stalls", component: AvailableStalls },
+  // Add another path if kailangan nang pumunta sa other pages
 ];
 
 const router = createRouter({
