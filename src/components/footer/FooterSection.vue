@@ -71,7 +71,7 @@ export default {
 }
 
 .contact-text {
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.4;
 }
 
@@ -81,14 +81,14 @@ export default {
 }
 
 .footer-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   margin-bottom: 15px;
   color: white;
 }
 
 .footer-description {
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.6;
   opacity: 0.95;
   margin: 0;

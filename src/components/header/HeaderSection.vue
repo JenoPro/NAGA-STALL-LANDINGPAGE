@@ -59,7 +59,7 @@ export default {
 }
 
 .header-container {
-  max-width: 1400px;
+  max-width: 1800px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -68,7 +68,7 @@ export default {
 }
 
 .header-left {
-  display: flex;
+  display: flex;  
   align-items: center;
 }
 
@@ -79,8 +79,8 @@ export default {
 }
 
 .logo {
-  width: 60px;
-  height: 60px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   border: 2px solid #fff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -93,7 +93,7 @@ export default {
 }
 
 .republic-text {
-  font-size: 14px;
+  font-size: 15px;
   color: #6c757d;
   font-weight: 500;
   letter-spacing: 0.3px;
@@ -108,7 +108,7 @@ export default {
 }
 
 .city-text {
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 700;
   color: #343a40;
   letter-spacing: 0.2px;
@@ -129,8 +129,8 @@ export default {
 .nav-link {
   text-decoration: none;
   color: #495057;
-  font-weight: 600;
-  font-size: 16px;
+  font-weight: 700;
+  font-size: 20px;
   padding: 8px 16px;
   border-radius: 8px;
   transition: all 0.3s ease;

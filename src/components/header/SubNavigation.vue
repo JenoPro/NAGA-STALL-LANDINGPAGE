@@ -1,23 +1,46 @@
 <template>
   <div class="sub-navigation">
     <div class="sub-nav-container">
-      <button class="sub-nav-item">View Available Stall</button>
-      <button class="sub-nav-item">Naga City People's Mall</button>
-      <button class="sub-nav-item">Satellite Market</button>
+      <button class="sub-nav-item left-item" @click="toggleAvailableStalls">View Available Stall</button>
+      <button class="sub-nav-item center-item">Naga City People's Mall</button>
+      <button class="sub-nav-item right-item">Satellite Market</button>
     </div>
   </div>
+
+<!--Pop-up added for available stalls 10/08/25-->
+  <transition name="popup">
+      <div v-if="showAvailableStalls" class="popup-overlay">
+        <div class="popup-content">
+          <AvailableStalls />
+        </div>
+      </div>
+    </transition>
 </template>
 
 <script>
+
+import AvailableStalls from '@/components/stalls/available_stalls/AvailableStalls.vue'
+
 export default {
-  name: "SubNavigation",
+  name: "SubNavigation",components: {
+    AvailableStalls,
+  },
+  data() {
+    return {
+      showAvailableStalls: false
+    };
+  },
+  methods: {
+    toggleAvailableStalls() {
+      this.showAvailableStalls = !this.showAvailableStalls;
+    }
+  }
 };
 </script>
 
 <style scoped>
 .sub-navigation {
   background: #d6d8db;
-  padding: 0;
   border-top: 1px solid #bbb;
 }
 
@@ -25,24 +48,35 @@ export default {
   max-width: 1400px;
   margin: 0 auto;
   display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 0;
 }
 
 .sub-nav-item {
-  flex: 1;
   background: none;
   border: none;
   color: #333;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 20px;
+  font-weight: 700;
   cursor: pointer;
   padding: 12px 20px;
-  text-align: center;
   transition: all 0.2s ease;
 }
 
-.sub-nav-item:last-child {
-  border-right: none;
+.left-item {
+  text-align: left;
+  margin-right: auto;
+}
+
+.center-item {
+  text-align: center;
+  flex: 0 0 auto;
+}
+
+.right-item {
+  text-align: right;
+  margin-left: auto;
 }
 
 .sub-nav-item:hover {
@@ -60,18 +94,20 @@ export default {
 @media (max-width: 1200px) {
   .sub-nav-container {
     padding: 0 30px;
-    gap: 30px;
   }
 }
 
 @media (max-width: 768px) {
   .sub-nav-container {
     flex-direction: column;
+    gap: 0;
   }
   
   .sub-nav-item {
-    border-right: none;
+    width: 100%;
+    text-align: center;
     border-bottom: 1px solid #bbb;
+    margin: 0;
   }
   
   .sub-nav-item:last-child {
@@ -81,7 +117,7 @@ export default {
 
 @media (max-width: 480px) {
   .sub-nav-container {
-    gap: 10px;
+    padding: 0 10px;
   }
   
   .sub-nav-item {

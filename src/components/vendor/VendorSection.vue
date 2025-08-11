@@ -37,8 +37,8 @@ export default {
 <style scoped>
 .vendor-section {
   background: linear-gradient(135deg, #fefefe 0%, #ffffff 100%);
-  padding: 80px 20px;
-  min-height: 720px;
+  padding: 120px 30px;
+  min-height: 1000px;
   display: flex;
   align-items: center;
   position: relative;
@@ -46,7 +46,7 @@ export default {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   width: 100%;
   position: relative;
@@ -56,63 +56,69 @@ export default {
 .content-wrapper {
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
-  gap: 40px;
+  gap: 80px;
   align-items: center;
 }
 
 .text-content {
-  padding-right: 20px;
+  padding-right: 40px;
   z-index: 3;
   position: relative;
 }
 
 .main-title {
-  font-size: 3.5rem;
-  font-weight: 800;
+  font-size: 4.5rem;
+  font-weight: 900;
   color: #1a1a2e;
   margin-bottom: 0;
-  line-height: 1.1;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
 }
 
 .sub-title {
-  font-size: 3.5rem;
-  font-weight: 800;
+  font-size: 4.5rem;
+  font-weight: 900;
   color: #1a1a2e;
-  margin-bottom: 30px;
-  line-height: 1.1;
-  margin-top: -10px;
+  margin-bottom: 50px;
+  line-height: 1.05;
+  margin-top: -15px;
+  letter-spacing: -0.02em;
 }
 
 .highlight-blue {
   color: #2563eb;
+  text-shadow: 0 0 30px rgba(37, 99, 235, 0.3);
 }
 
 .description {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #4a5568;
-  line-height: 1.6;
-  margin-bottom: 40px;
-  max-width: 500px;
+  line-height: 1.7;
+  margin-bottom: 60px;
+  max-width: 600px;
   font-weight: 400;
 }
 
 .apply-btn {
-  background: #1976d2;
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
   color: white;
   border: none;
-  padding: 15px 30px;
-  font-size: 18px;
-  font-weight: 600;
-  border-radius: 8px;
+  padding: 15px 25px;
+  font-size: 22px;
+  font-weight: 700;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
   width: fit-content;
+  box-shadow: 0 8px 30px rgba(25, 118, 210, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .apply-btn:hover {
-  background: #1d4ed8;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(30, 64, 175, 0.4);
+  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+  transform: translateY(-4px);
+  box-shadow: 0 15px 40px rgba(13, 71, 161, 0.4);
 }
 
 .illustration-wrapper {
@@ -125,31 +131,65 @@ export default {
 
 .vendor-image {
   width: 100%;
-  max-width: 450px;
+  max-width: 600px;
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.15));
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
+
+.vendor-image:hover {
+  transform: scale(1.15);
 }
 
 /* Responsive Design */
+@media (max-width: 1400px) {
+  .container {
+    max-width: 1200px;
+  }
+  
+  .main-title, .sub-title {
+    font-size: 4rem;
+  }
+  
+  .vendor-image {
+    max-width: 550px;
+  }
+}
+
 @media (max-width: 1024px) {
+  .vendor-section {
+    padding: 100px 25px;
+    min-height: 900px;
+  }
+  
+  .content-wrapper {
+    gap: 60px;
+  }
+  
   .main-title, .sub-title {
     font-size: 3.5rem;
   }
   
+  .description {
+    font-size: 1.2rem;
+  }
+  
   .vendor-image {
-    max-width: 400px;
+    max-width: 500px;
   }
 }
 
 @media (max-width: 768px) {
   .vendor-section {
-    padding: 60px 20px;
+    padding: 80px 20px;
+    min-height: 800px;
   }
   
   .content-wrapper {
     grid-template-columns: 1fr;
-    gap: 30px;
+    gap: 50px;
     text-align: center;
   }
   
@@ -163,7 +203,7 @@ export default {
   }
   
   .main-title, .sub-title {
-    font-size: 2.8rem;
+    font-size: 3.2rem;
   }
   
   .description {
@@ -171,14 +211,24 @@ export default {
     max-width: 100%;
   }
   
+  .apply-btn {
+    padding: 18px 40px;
+    font-size: 20px;
+  }
+  
   .vendor-image {
-    max-width: 350px;
+    max-width: 450px;
   }
 }
 
 @media (max-width: 480px) {
+  .vendor-section {
+    padding: 60px 15px;
+    min-height: 700px;
+  }
+  
   .main-title, .sub-title {
-    font-size: 2.2rem;
+    font-size: 2.8rem;
   }
   
   .description {
@@ -187,11 +237,11 @@ export default {
   
   .apply-btn {
     padding: 16px 36px;
-    font-size: 1.1rem;
+    font-size: 18px;
   }
   
   .vendor-image {
-    max-width: 300px;
+    max-width: 350px;
   }
 }
 </style>
