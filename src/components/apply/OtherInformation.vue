@@ -9,7 +9,7 @@
                 </label>
 
                 <label>
-                    House Location:
+                    House Sketch Location:
                     <input type="file" accept="image/*" @change="onFileChange('applicantLocation', $event)" required />
                 </label>
 
@@ -25,7 +25,7 @@
 
                 <div class="buttons">
                     <button type="button" class="btn-close" @click="$emit('previous')">Back</button>
-                    <button type="button" class="btn-next" @click="goNext">Next</button>
+                    <button type="button" class="btn-next" @click="goNext">Submit Application</button>
                 </div>
             </form>
         </div>
@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import Swal from 'sweetalert2';
 export default {
     name: 'OtherInformation',
     emits: ['previous', 'next', 'close'],
@@ -61,24 +62,35 @@ export default {
         },
         goNext() {
             if (!this.applicantSignature || !this.applicantLocation || !this.applicantValidID || !this.emailAddress) {
-                alert("Please fill in all required fields.");
+                Swal.fire("Incomplete Fields", "Please fill in all required fields.", "warning");
                 return;
             }
 
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailPattern.test(this.emailAddress)) {
-                alert("Please enter a valid email address.");
+                Swal.fire("Invalid Email", "Please enter a valid email address.", "error");
                 return;
             }
 
-            const otherInfoData = {
-                applicantSignature: this.applicantSignature,
-                applicantLocation: this.applicantLocation,
-                applicantValidID: this.applicantValidID,
-                emailAddress: this.emailAddress
-            };
-
-            this.$emit('next', otherInfoData);
+            Swal.fire({
+                title: "Application Submitted",
+                text: "The admin will review your application, upon approval. The provided account will be sent directly to your contact number or email address.",
+                icon: "success",
+                confirmButtonText: "OK",
+                customClass: {
+                    popup: 'swal-custom-popup',
+                    confirmButton: 'swal-custom-confirm'
+                },
+                buttonsStyling: false
+            }).then(() => {
+                const otherInfoData = {
+                    applicantSignature: this.applicantSignature,
+                    applicantLocation: this.applicantLocation,
+                    applicantValidID: this.applicantValidID,
+                    emailAddress: this.emailAddress
+                };
+                this.$emit('next', otherInfoData);
+            });
         }
     }
 };

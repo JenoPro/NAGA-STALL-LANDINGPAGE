@@ -80,3 +80,32 @@ button.btn-close {
 button.btn-close:hover {
     background-color: #c82333;
 }   
+
+/* SweetAlert custom popup radius & shadow */
+.swal2-container {
+  z-index: 10000 !important;
+}
+
+.swal-custom-popup {
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+}
+
+.swal-custom-confirm {
+    background-color: #002B5B;
+    color: white;
+    font-weight: bold;
+    padding: 10px 18px;
+    border-radius: 7px;
+    cursor: pointer;
+    border: none;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.swal-custom-confirm:hover {
+    background-color: #12579b; /* Match hover color */
+}
+
