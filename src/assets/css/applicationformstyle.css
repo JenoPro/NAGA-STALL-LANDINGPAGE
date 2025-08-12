@@ -1,5 +1,5 @@
-/* 
-PS: MAY BUG DITO, HINDI VISIBLE ANG TEXT AREA KAPAG NAKA EXTERNAL CSS TAYO. KAINIS :3
+ 
+
 .overlay {
     position: fixed;
     top: 0;
@@ -80,4 +80,3 @@ button.btn-close {
 button.btn-close:hover {
     background-color: #c82333;
 }   
-*/ 

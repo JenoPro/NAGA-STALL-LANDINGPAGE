@@ -22,21 +22,23 @@
                         <p>{{ stall.market }}</p>
                         <p class="stall-description">{{ stall.description }}</p>
                     </div>
-
-                    <!-- Popup Application Form -->
-                    <Apply v-if="showApplyForm" :stall="selectedStall" @close="closeApplyForm" />
                 </div>
             </div>
         </div>
+
+        <!-- Stall Application Container -->
+        <StallApplicationContainer v-if="showApplyForm" :stall="selectedStall" :showForm="showApplyForm"
+            @close="closeApplyForm" />
     </div>
 </template>
 
 <script>
-import Apply from '../apply/PersonalInformation.vue';
+import StallApplicationContainer from '../apply/StallApplicationContainer.vue';
+
 export default {
     name: "AvailableStalls",
     components: {
-        Apply,
+        StallApplicationContainer,
     },
     data() {
         return {
@@ -99,7 +101,8 @@ export default {
             showApplyForm: false,
             selectedStall: null,
         };
-    }, methods: {
+    },
+    methods: {
         openApplyForm(stall) {
             this.selectedStall = stall;
             this.showApplyForm = true;
@@ -117,6 +120,7 @@ export default {
     background: white;
     padding: 20px;
     border-radius: 8px;
+    z-index: 9998;
 }
 
 .stall-grid {
