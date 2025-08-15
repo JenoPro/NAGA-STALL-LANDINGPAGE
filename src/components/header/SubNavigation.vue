@@ -1,20 +1,25 @@
 <template>
   <div class="sub-navigation">
-    <div class="sub-nav-container">
-      <button class="sub-nav-item left-item" @click="toggleAvailableStalls">View Available Stall</button>
-      <button class="sub-nav-item center-item">Naga City People's Mall</button>
-      <button class="sub-nav-item right-item">Satellite Market</button>
-    </div>
-  </div>
-
-<!--Pop-up added for available stalls 10/08/25-->
-  <transition name="popup">
-      <div v-if="showAvailableStalls" class="popup-overlay">
-        <div class="popup-content">
-          <AvailableStalls />
-        </div>
+      <div class="sub-nav-container">
+        <button class="sub-nav-item left-item" :class="{ active: selectedMarket === 'all' }" @click="handleMarketFilter('all')">
+          View Available Stall
+        </button>
+        <button class="sub-nav-item center-item" :class="{ active: selectedMarket === 'Naga City People\'s Market' }"
+          @click="handleMarketFilter('Naga City People\'s Market')">
+          Naga City People's Mall
+        </button>
+        <button class="sub-nav-item right-item" :class="{ active: selectedMarket === 'Satellite Market' }"
+          @click="handleMarketFilter('Satellite Market')">
+          Satellite Market
+        </button>
       </div>
-    </transition>
+    </div>
+
+<!--Available stalls section-->
+  <div v-if="showAvailableStalls">
+    <!-- Pass the selectedMarket as a prop to AvailableStalls -->
+    <AvailableStalls :selectedMarket="selectedMarket" />
+  </div>
 </template>
 
 <script>
@@ -22,18 +27,30 @@
 import AvailableStalls from '@/components/stalls/available_stalls/AvailableStalls.vue'
 
 export default {
-  name: "SubNavigation",components: {
+  name: "SubNavigation",
+  components: {
     AvailableStalls,
   },
   data() {
     return {
-      showAvailableStalls: false
+      showAvailableStalls: false,
+      selectedMarket: 'all'
     };
   },
   methods: {
     toggleAvailableStalls() {
       this.showAvailableStalls = !this.showAvailableStalls;
-    }
+    },
+    handleMarketFilter(market) {
+      // Toggle behavior: if same market is clicked and popup is open, close it
+      if (this.selectedMarket === market && this.showAvailableStalls) {
+        this.showAvailableStalls = false;
+      } else {
+        // Otherwise, set the market and show popup
+        this.selectedMarket = market;
+        this.showAvailableStalls = true;
+      }
+    },
   }
 };
 </script>
@@ -82,12 +99,6 @@ export default {
 .sub-nav-item:hover {
   background: #bbbdc1;
   color: #000;
-}
-
-.sub-nav-item.active {
-  background: #c5c7ca;
-  color: #000;
-  font-weight: 600;
 }
 
 /* Responsive Design */

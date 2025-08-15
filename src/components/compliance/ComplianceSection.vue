@@ -11,7 +11,7 @@
         <p class="section-description">
           Keep market running smoothly report issues, stay compliant, and ensure a better business environment.
         </p>
-        <button class="member-btn">Member</button>
+        <button class="member-btn">Report Now</button>
       </div>
       <div class="image-container">
         <img

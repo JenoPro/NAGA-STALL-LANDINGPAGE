@@ -26,8 +26,8 @@
           <div class="stat-label">Available Stall</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">60 Year's</div>
-          <div class="stat-label">Of Service</div>
+          <div class="stat-number">60</div>
+          <div class="stat-label">Year's Of Service</div>
         </div>
       </div>
 

@@ -23,6 +23,7 @@
         <div class="header-right">
           <nav class="nav-menu">
             <a href="#" class="nav-link">Home</a>
+            <a href="#" class="nav-link">Ordinance</a>
             <a href="#" class="nav-link">About Us</a>
             <a href="#" class="nav-link">Contact</a>
           </nav>
@@ -127,10 +128,12 @@ export default {
 }
 
 .nav-link {
+  font-family: "Inter", Sans-serif;
+  text-transform: uppercase;
   text-decoration: none;
   color: #495057;
   font-weight: 700;
-  font-size: 20px;
+  font-size: 15px;
   padding: 8px 16px;
   border-radius: 8px;
   transition: all 0.3s ease;
