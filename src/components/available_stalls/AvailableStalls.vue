@@ -1,24 +1,30 @@
 <template>
     <div class="available-stalls">
+        <!-- Simple header without close button -->
+        <div class="stalls-header">
+            <h2>Available Stalls</h2>
+            <div class="market-info" v-if="internalMarket !== 'all'">
+                <span class="current-filter">Showing: {{ internalMarket }}</span>
+            </div>
+        </div>
+
+        <!-- Stalls Grid -->
         <div class="stall-grid">
-            <div class="stall-card" v-for="stall in stalls" :key="stall.id">
+            <div class="stall-card" v-for="stall in filteredStalls" :key="stall.id">
                 <div class="stall-image">
                     <img :src="stall.image" :alt="stall.name" />
                 </div>
-
                 <div class="stall-info">
                     <div class="stall-header">
                         <span class="stall-badge">STALL# {{ stall.id.toString().padStart(2, '0') }}</span>
                         <span class="stall-price">{{ stall.price }}</span>
                     </div>
-
                     <div class="stall-details">
                         <p>{{ stall.location }}</p>
                         <div class="size-btn-row">
                             <p>{{ stall.size }}</p>
                             <button class="apply-btn" @click="openApplyForm(stall)">APPLY NOW!</button>
                         </div>
-
                         <p>{{ stall.market }}</p>
                         <p class="stall-description">{{ stall.description }}</p>
                     </div>
@@ -26,7 +32,12 @@
             </div>
         </div>
 
-        <!-- Stall Application Container -->
+        <!-- No Results Message -->
+        <div v-if="filteredStalls.length === 0" class="no-results">
+            <p>No stalls available for the selected market.</p>
+        </div>
+
+        <!-- StallApplicationContainer.vue -->
         <StallApplicationContainer v-if="showApplyForm" :stall="selectedStall" :showForm="showApplyForm"
             @close="closeApplyForm" />
     </div>
@@ -40,8 +51,15 @@ export default {
     components: {
         StallApplicationContainer,
     },
+    props: {
+        selectedMarket: {
+            type: String,
+            default: 'all'
+        }
+    },
     data() {
         return {
+            internalMarket: 'all', // Internal state for the dropdown
             stalls: [
                 {
                     id: 1,
@@ -102,7 +120,27 @@ export default {
             selectedStall: null,
         };
     },
+    computed: {
+        filteredStalls() {
+            const market = this.internalMarket;
+            if (market === 'all') {
+                return this.stalls;
+            }
+            return this.stalls.filter(stall => stall.market === market);
+        }
+    },
+    watch: {
+        selectedMarket: {
+            immediate: true,
+            handler(newMarket) {
+                this.internalMarket = newMarket;
+            }
+        }
+    },
     methods: {
+        updateMarketFilter() {
+            this.$emit('market-changed', this.internalMarket);
+        },
         openApplyForm(stall) {
             this.selectedStall = stall;
             this.showApplyForm = true;

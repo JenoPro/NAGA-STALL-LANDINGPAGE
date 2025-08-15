@@ -29,22 +29,28 @@
       </v-container>
     </header>
 
-    <!-- Sub Navigation -->
     <div class="sub-nav">
       <div class="sub-nav-container">
-        <button class="sub-nav-btn" @click="toggleAvailableStalls">
+        <button class="sub-nav-btn" :class="{ active: selectedMarket === 'all' }" @click="handleMarketFilter('all')">
           View Available Stall
         </button>
-        <button class="sub-nav-btn">Naga City People's Mall</button>
-        <button class="sub-nav-btn">Satellite Market</button>
+        <button class="sub-nav-btn" :class="{ active: selectedMarket === 'Naga City People\'s Market' }"
+          @click="handleMarketFilter('Naga City People\'s Market')">
+          Naga City People's Mall
+        </button>
+        <button class="sub-nav-btn" :class="{ active: selectedMarket === 'Satellite Market' }"
+          @click="handleMarketFilter('Satellite Market')">
+          Satellite Market
+        </button>
       </div>
     </div>
 
-    <!--Pop-up added for available stalls 10/08/25-->
+    <!-- Pop-up added for available stalls 10/08/25 -->
     <transition name="popup">
-      <div v-if="showAvailableStalls" class="popup-overlay">
-        <div class="popup-content">
-          <AvailableStalls />
+      <div v-if="showAvailableStalls" class="popup-overlay" @click="closePopup">
+        <div class="popup-content" @click.stop>
+          <!-- No close button here anymore -->
+          <AvailableStalls :selectedMarket="selectedMarket" @close-popup="closePopup" />
         </div>
       </div>
     </transition>
@@ -163,23 +169,35 @@
 import AvailableStalls from './available_stalls/AvailableStalls.vue'
 
 export default {
-  name: "NagaCityLanding",
+  name: 'LandingPage',
   components: {
     AvailableStalls
   },
   data() {
     return {
-      showAvailableStalls: false
+      showAvailableStalls: false,
+      selectedMarket: 'all'
     };
   },
   methods: {
-    toggleAvailableStalls() {
-      this.showAvailableStalls = !this.showAvailableStalls;
-    }
+    handleMarketFilter(market) {
+      // Toggle behavior: if same market is clicked and popup is open, close it
+      if (this.selectedMarket === market && this.showAvailableStalls) {
+        this.showAvailableStalls = false;
+      } else {
+        // Otherwise, set the market and show popup
+        this.selectedMarket = market;
+        this.showAvailableStalls = true;
+      }
+    },
+    closePopup() {
+      this.showAvailableStalls = false;
+      // Optional: reset to 'all' when closing via overlay click
+      // this.selectedMarket = 'all';
+    },
   }
 };
 </script>
-
 
 <style scoped>
 * {
