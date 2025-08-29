@@ -1,0 +1,98 @@
+.sub-navigation {
+  background: #d6d8db;
+  border-top: 1px solid #bbb;
+}
+
+.sub-nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+}
+
+.sub-nav-item {
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 12px 20px;
+  transition: all 0.2s ease;
+}
+
+.left-item {
+  text-align: left;
+  margin-right: auto;
+}
+
+.center-item {
+  text-align: center;
+  flex: 0 0 auto;
+}
+
+.right-item {
+  text-align: right;
+  margin-left: auto;
+}
+
+.sub-nav-item:hover {
+  background: #bbbdc1;
+  color: #000;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .sub-nav-container {
+    padding: 0 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sub-nav-container {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .sub-nav-item {
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid #bbb;
+    margin: 0;
+  }
+
+  .sub-nav-item:last-child {
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .sub-nav-container {
+    padding: 0 10px;
+  }
+
+  .sub-nav-item {
+    font-size: 13px;
+    padding: 10px 15px;
+  }
+}
+
+/* Animation for AvailableStalls fade & scale */
+.popup-enter-active,
+.popup-leave-active {
+  transition: all 0.4s ease;
+}
+
+.popup-enter-from,
+.popup-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.popup-enter-to,
+.popup-leave-from {
+  opacity: 1;
+  transform: scale(1);
+}

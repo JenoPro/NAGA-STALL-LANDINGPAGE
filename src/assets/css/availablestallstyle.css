@@ -1,0 +1,113 @@
+.available-stalls {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    z-index: 9998;
+}
+
+.stall-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.stall-card {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stall-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.stall-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.stall-info {
+    padding: 16px;
+}
+
+.stall-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.stall-badge {
+    background: white;
+    border: 2px solid #002B5B;
+    color: #002B5B;
+    padding: 4px 10px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.stall-price {
+    color: #002B5B;
+    font-weight: bold;
+}
+
+.stall-details {
+    font-size: 17px;
+    color: #555;
+    margin-bottom: 12px;
+}
+
+.apply-btn {
+    background: #002B5B;
+    color: white;
+    font-weight: bold;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.size-btn-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.apply-btn:hover {
+    background: #004080;
+}
+
+.stall-description {
+    font-size: 17px;
+    color: #666;
+    margin-top: 6px;
+    line-height: 1.4;
+}
+
+/* Tablet view */
+@media (max-width: 1024px) {
+    .stall-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Mobile view */
+@media (max-width: 600px) {
+    .stall-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stall-image {
+        height: 180px;
+    }
+
+    .stall-details {
+        font-size: 15px;
+    }
+}

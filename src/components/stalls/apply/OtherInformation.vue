@@ -1,7 +1,7 @@
 <template>
     <div class="overlay">
         <div class="form-container">
-            <h2>Other Information</h2>
+            <h3>Other Information</h3>
             <form @submit.prevent>
                 <label>
                     Signature of applicant:
@@ -79,7 +79,7 @@ export default {
                 confirmButtonText: "OK",
                 customClass: {
                     popup: 'swal-custom-popup',
-                    confirmButton: 'swal-custom-confirm'
+                    confirmButton: 'btn-next'
                 },
                 buttonsStyling: false
             }).then(() => {
