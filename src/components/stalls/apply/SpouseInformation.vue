@@ -9,9 +9,10 @@
                 </label>
 
                 <label>
-                    Age of Spouse:
-                    <input type="number" v-model.number="spouseAge" min="0"
-                        :required="personalInfo.civilStatus !== 'Single'" />
+                    Date of Birth of Spouse:
+                    <input type="date" v-model="spouseBirthdate" :required="personalInfo.civilStatus !== 'Single'" />
+                    <span v-if="calculatedSpouseAge !== null" class="age-display">Age: {{ calculatedSpouseAge }} years
+                        old</span>
                 </label>
 
                 <label>
@@ -34,6 +35,16 @@
                     <input type="tel" v-model="spouseContact" :required="personalInfo.civilStatus !== 'Single'" />
                 </label>
 
+                <div class="children-section">
+                    <label class="children-label">
+                        Names of Children:
+                        <small>(Optional - Enter each child's name on a separate line)</small>
+                    </label>
+                    <textarea v-model="childrenNames"
+                        placeholder="Enter children's names, one per line&#10;Example:&#10;Juan Dela Cruz&#10;Maria Dela Cruz"
+                        rows="4" class="children-textarea"></textarea>
+                </div>
+
                 <div class="buttons">
                     <button type="button" class="btn-close" @click="$emit('previous')">Back</button>
                     <button type="button" class="btn-next" @click="goNext">Next</button>
@@ -53,7 +64,7 @@ export default {
     data() {
         return {
             spouseName: '',
-            spouseAge: null,
+            spouseBirthdate: '',
             spouseEducation: '',
             educationLevels: [
                 'No Formal Education',
@@ -65,17 +76,39 @@ export default {
                 'Postgraduate',
             ],
             occupation: '',
-            spouseContact: ''
+            spouseContact: '',
+            childrenNames: ''
+        }
+    },
+    computed: {
+        calculatedSpouseAge() {
+            if (!this.spouseBirthdate) return null;
+
+            const today = new Date();
+            const birthDate = new Date(this.spouseBirthdate);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+
+            // Adjust age if birthday hasn't occurred this year.
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+
+            return age;
+        },
+        childrenArray() {
+            if (!this.childrenNames.trim()) return [];
+            return this.childrenNames.trim().split('\n').filter(name => name.trim() !== '');
         }
     },
     methods: {
         goNext() {
-            if (!this.spouseName || !this.spouseAge || !this.spouseEducation || !this.occupation || !this.spouseContact) {
+            if (!this.spouseName || !this.spouseBirthdate || !this.spouseEducation || !this.occupation || !this.spouseContact) {
                 alert("Please fill in all required fields.");
                 return;
             }
 
-            if (this.spouseAge < 18) {
+            if (this.calculatedSpouseAge < 18) {
                 alert("Spouse must be at least 18 years old.");
                 return;
             }
@@ -88,10 +121,12 @@ export default {
 
             const spouseData = {
                 spouseName: this.spouseName,
-                spouseAge: this.spouseAge,
+                spouseBirthdate: this.spouseBirthdate,
+                spouseAge: this.calculatedSpouseAge,
                 spouseEducation: this.spouseEducation,
                 occupation: this.occupation,
-                spouseContact: this.spouseContact
+                spouseContact: this.spouseContact,
+                childrenNames: this.childrenArray
             };
 
             this.$emit('next', spouseData);

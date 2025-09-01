@@ -4,6 +4,21 @@
             <h3>Business Information</h3>
             <form @submit.prevent>
                 <label>
+                    Nature of Business:
+                    <select v-model="natureOfBusiness" required>
+                        <option disabled value="">Please select</option>
+                        <option v-for="business in businessTypes" :key="business" :value="business">{{ business }}
+                        </option>
+                    </select>
+                </label>
+
+                <!-- Show text input when "Other" is selected -->
+                <label v-if="natureOfBusiness === 'Other'">
+                    Please specify:
+                    <input type="text" v-model="otherBusinessType" placeholder="Enter your business type" required />
+                </label>
+
+                <label>
                     Capitalization:
                     <input type="number" v-model="businessCapitalization" required />
                 </label>
@@ -23,7 +38,7 @@
 
                 <label>
                     Relatives who is presently a stall owner @NCPM (If any):
-                    <input type="tel" v-model="applicantRelative" />
+                    <input type="text" v-model="applicantRelative" />
                 </label>
 
                 <div class="buttons">
@@ -46,13 +61,33 @@ export default {
             type: Object,
             default: null
         }
-
-    }, data() {
+    },
+    data() {
         return {
+            natureOfBusiness: '',
+            otherBusinessType: '',
             businessCapitalization: null,
             sourceOfCapital: '',
             previousBusiness: '',
             applicantRelative: '',
+            businessTypes: [
+                'Fish and Seafood',
+                'Meat',
+                'Vegetables and Fruits',
+                'Rice and Grains',
+                'Clothing and Accessories',
+                'Electronics',
+                'Home Goods and Appliances',
+                'Beauty and Personal Care',
+                'Food and Beverages',
+                'Hardware and Tools',
+                'Toys and Games',
+                'Books and Stationery',
+                'Flowers and Plants',
+                'Handicrafts and Souvenirs',
+                'Services (Repair, etc.)',
+                'Other'
+            ],
             capitalType: [
                 'Personal Savings',
                 'Loan from Bank/Financial Institution',
@@ -62,10 +97,17 @@ export default {
                 'Other Sources'
             ]
         };
-    }, methods: {
+    },
+    methods: {
         goNext() {
-            if (!this.businessCapitalization || !this.sourceOfCapital || !this.previousBusiness) {
+            if (!this.natureOfBusiness || !this.businessCapitalization || !this.sourceOfCapital || !this.previousBusiness) {
                 alert("Please fill in all required fields.");
+                return;
+            }
+
+            // Additional validation for "Other" selection
+            if (this.natureOfBusiness === 'Other' && !this.otherBusinessType.trim()) {
+                alert("Please specify your business type.");
                 return;
             }
 
@@ -74,10 +116,16 @@ export default {
                 return;
             }
 
+            // Use the specified business type if "Other" is selected
+            const finalBusinessType = this.natureOfBusiness === 'Other'
+                ? this.otherBusinessType.trim()
+                : this.natureOfBusiness;
+
             const businessData = {
+                natureOfBusiness: finalBusinessType,
                 businessCapitalization: this.businessCapitalization,
                 sourceOfCapital: this.sourceOfCapital,
-                PreviousBusiness: this.previousBusiness,
+                previousBusiness: this.previousBusiness,
                 applicantRelative: this.applicantRelative
             };
             this.$emit('next', businessData);

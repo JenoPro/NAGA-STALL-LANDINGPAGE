@@ -19,8 +19,9 @@
                 </label>
 
                 <label>
-                    Age:
-                    <input type="number" v-model.number="age" min="0" required />
+                    Date of Birth:
+                    <input type="date" v-model="birthdate" required />
+                    <span v-if="calculatedAge !== null" class="age-display">Age: {{ calculatedAge }} years old</span>
                 </label>
 
                 <label>
@@ -60,7 +61,7 @@ export default {
         return {
             fullName: '',
             education: '',
-            age: null,
+            birthdate: '',
             civilStatus: '',
             contactNumber: '',
             mailingAddress: '',
@@ -82,18 +83,35 @@ export default {
             ],
         };
     },
+    computed: {
+        calculatedAge() {
+            if (!this.birthdate) return null;
+
+            const today = new Date();
+            const birthDate = new Date(this.birthdate);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+
+            // Adjust age if birthday hasn't occurred yet this year.
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+
+            return age;
+        }
+    },
     methods: {
         goNext() {
             const name = this.fullName.trim();
             const contact = this.contactNumber.trim();
             const address = this.mailingAddress.trim();
 
-            if (!name || !this.education || !this.age || !this.civilStatus || !contact || !address) {
+            if (!name || !this.education || !this.birthdate || !this.civilStatus || !contact || !address) {
                 alert("Please fill in all required fields.");
                 return;
             }
 
-            if (this.age < 18) {
+            if (this.calculatedAge < 18) {
                 alert("Applicant must be at least 18 years old.");
                 return;
             }
@@ -107,7 +125,8 @@ export default {
             const formData = {
                 fullName: name,
                 education: this.education,
-                age: this.age,
+                birthdate: this.birthdate,
+                age: this.calculatedAge,
                 civilStatus: this.civilStatus,
                 contactNumber: contact,
                 mailingAddress: address,
