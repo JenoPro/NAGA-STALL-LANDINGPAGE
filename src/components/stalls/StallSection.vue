@@ -1,11 +1,7 @@
 <template>
   <section class="hero-section">
     <div class="hero-background">
-      <img
-        :src="require('@/assets/market.png')"
-        alt="Naga People's Mall"
-        class="hero-image"
-      />
+      <img :src="require('@/assets/market.png')" alt="Naga People's Mall" class="hero-image" />
       <div class="hero-overlay"></div>
     </div>
     <div class="hero-content">
@@ -72,14 +68,12 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    to right,
-    rgb(255, 255, 255) 0%,
-    rgb(255, 255, 255) 35%,
-    rgba(255, 255, 255, 0.8) 50%,
-    rgba(255, 255, 255, 0) 70%,
-    transparent 100%
-  );
+  background: linear-gradient(to right,
+      rgb(255, 255, 255) 0%,
+      rgb(255, 255, 255) 35%,
+      rgba(255, 255, 255, 0.8) 50%,
+      rgba(255, 255, 255, 0) 70%,
+      transparent 100%);
 }
 
 .hero-content {
@@ -227,7 +221,7 @@ export default {
     max-width: 1200px;
     margin-left: 60px;
   }
-  
+
   .hero-title,
   .hero-subtitle {
     font-size: 4.5rem;
@@ -238,26 +232,26 @@ export default {
   .hero-section {
     min-height: 1000px;
   }
-  
+
   .hero-content {
     padding: 80px 25px;
     margin-left: 40px;
   }
-  
+
   .hero-title,
   .hero-subtitle {
     font-size: 4rem;
   }
-  
+
   .stats-container {
     gap: 30px;
   }
-  
+
   .stat-card {
     min-width: 160px;
     padding: 30px 20px;
   }
-  
+
   .stat-number {
     font-size: 2.5rem;
   }
@@ -267,37 +261,37 @@ export default {
   .hero-section {
     min-height: 900px;
   }
-  
+
   .hero-content {
     padding: 60px 20px;
     margin-left: 0;
     text-align: center;
   }
-  
+
   .hero-title,
   .hero-subtitle {
     font-size: 3.5rem;
   }
-  
+
   .stats-container {
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
   }
-  
+
   .stat-card {
     min-width: 140px;
     padding: 25px 15px;
   }
-  
+
   .stat-number {
     font-size: 2.2rem;
   }
-  
+
   .stat-label {
     font-size: 1rem;
   }
-  
+
   .apply-btn {
     padding: 20px 45px;
     font-size: 20px;
@@ -308,27 +302,27 @@ export default {
   .hero-section {
     min-height: 800px;
   }
-  
+
   .hero-content {
     padding: 40px 15px;
   }
-  
+
   .hero-title,
   .hero-subtitle {
     font-size: 3rem;
   }
-  
+
   .stats-container {
     flex-direction: column;
     align-items: center;
     gap: 15px;
   }
-  
+
   .stat-card {
     width: 100%;
     max-width: 250px;
   }
-  
+
   .apply-btn {
     padding: 18px 40px;
     font-size: 18px;

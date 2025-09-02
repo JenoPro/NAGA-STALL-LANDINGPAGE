@@ -1,11 +1,5 @@
 <template>
     <div class="available-stalls">
-        <div class="stalls-header">
-            <div class="market-info" v-if="internalMarket !== 'all'">
-                <span class="current-filter">Showing: {{ internalMarket }}</span>
-            </div>
-        </div>
-
         <!-- Stalls Grid -->
         <div class="stall-grid">
             <div class="stall-card" v-for="stall in filteredStalls" :key="stall.id">
