@@ -5,8 +5,8 @@
         @click="handleMarketFilter('all')">
         View Available Stall
       </button>
-      <button class="sub-nav-item center-item" :class="{ active: selectedMarket === 'Naga City People\'s Market' }"
-        @click="handleMarketFilter('Naga City People\'s Market')">
+      <button class="sub-nav-item center-item" :class="{ active: selectedMarket === `Naga City People's Mall` }"
+        @click="handleMarketFilter(`Naga City People's Mall`)">
         Naga City People's Mall
       </button>
       <button class="sub-nav-item right-item" :class="{ active: selectedMarket === 'Satellite Market' }"
@@ -24,7 +24,6 @@
     </div>
   </transition>
 </template>
-
 
 <script>
 
