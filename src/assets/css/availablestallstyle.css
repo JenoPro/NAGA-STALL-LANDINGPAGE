@@ -48,7 +48,7 @@
     padding: 4px 10px;
     border-radius: 50px;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 18px;
 }
 
 .stall-price {
@@ -57,7 +57,7 @@
 }
 
 .stall-details {
-    font-size: 17px;
+    font-size: 18px;
     color: #555;
     margin-bottom: 12px;
 }
@@ -84,10 +84,76 @@
 }
 
 .stall-description {
-    font-size: 17px;
+    font-size: 18px;
     color: #666;
     margin-top: 6px;
     line-height: 1.4;
+}
+
+/* Pagination Controls */
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    padding: 20px 0;
+    border-top: 1px solid #e0e0e0;
+}
+
+.pagination-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #002B5B;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+.pagination-btn:hover:not(.disabled) {
+    background: #004080;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 43, 91, 0.3);
+}
+
+.pagination-btn.disabled {
+    background: #ccc;
+    color: #888;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.pagination-btn svg {
+    transition: transform 0.2s ease;
+}
+
+.pagination-btn:hover:not(.disabled) svg {
+    transform: translateX(2px);
+}
+
+.prev-btn:hover:not(.disabled) svg {
+    transform: translateX(-2px);
+}
+
+.pagination-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: #333;
+    font-weight: 600;
+}
+
+.stall-count {
+    font-size: 18px;
+    color: #666;
+    font-weight: normal;
 }
 
 /* Tablet view */
@@ -110,4 +176,35 @@
     .stall-details {
         font-size: 15px;
     }
+
+    .pagination-controls {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .pagination-btn {
+        padding: 10px 16px;
+        font-size: 18px;
+    }
+
+    .pagination-info {
+        order: -1;
+    }
+}
+
+/* Fade animation for pagination */
+.fade-pagination-enter-active,
+.fade-pagination-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-pagination-enter-from,
+.fade-pagination-leave-to {
+    opacity: 0;
+}
+
+.fade-pagination-enter-to,
+.fade-pagination-leave-from {
+    opacity: 1;
 }

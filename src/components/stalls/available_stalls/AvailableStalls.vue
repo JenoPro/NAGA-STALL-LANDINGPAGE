@@ -11,32 +11,58 @@
       <button @click="fetchStalls" class="retry-btn">Try Again</button>
     </div>
 
-    <!-- Stalls Grid -->
-    <div v-else class="stall-grid">
-      <div class="stall-card" v-for="stall in filteredStalls" :key="stall.id">
-        <div class="stall-image">
-          <img
-            :src="stall.image"
-            :alt="`Stall ${stall.stallNumber}`"
-            @error="handleImageError"
-          />
-        </div>
-        <div class="stall-info">
-          <div class="stall-header">
-            <span class="stall-badge">{{ stall.stallNumber }}</span>
-            <span class="stall-price">{{ stall.price }}</span>
-          </div>
-          <div class="stall-details">
-            <p>{{ stall.floor }} / {{ stall.section }}</p>
-            <div class="size-btn-row">
-              <p>{{ stall.dimensions }}</p>
-              <button class="apply-btn" @click="openApplyForm(stall)">APPLY NOW!</button>
+    <!-- Stalls Grid with fade animation -->
+    <div v-else>
+      <transition name="fade-pagination" mode="out-in">
+        <div class="stall-grid" :key="currentPage">
+          <div class="stall-card" v-for="stall in paginatedStalls" :key="stall.id">
+            <div class="stall-image">
+              <img :src="stall.image" :alt="`Stall ${stall.stallNumber}`" @error="handleImageError" />
             </div>
-            <p>{{ stall.location }}</p>
-            <p class="stall-description">{{ stall.description }}</p>
+            <div class="stall-info">
+              <div class="stall-header">
+                <span class="stall-badge">{{ stall.stallNumber }}</span>
+                <span class="stall-price">{{ stall.price }}</span>
+              </div>
+              <div class="stall-details">
+                <p>{{ stall.floor }} / {{ stall.section }}</p>
+                <div class="size-btn-row">
+                  <p>{{ stall.dimensions }}</p>
+                  <button class="apply-btn" @click="openApplyForm(stall)">APPLY NOW!</button>
+                </div>
+                <p>{{ stall.location }}</p>
+                <p class="stall-description">{{ stall.description }}</p>
+              </div>
+            </div>
           </div>
         </div>
+      </transition>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div v-if="!loading && !error && totalPages > 1" class="pagination-controls">
+      <button class="pagination-btn prev-btn" @click="previousPage" :disabled="currentPage === 1"
+        :class="{ disabled: currentPage === 1 }">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        Previous
+      </button>
+
+      <div class="pagination-info">
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+        <span class="stall-count">({{ filteredStalls.length }} stalls)</span>
       </div>
+
+      <button class="pagination-btn next-btn" @click="nextPage" :disabled="currentPage === totalPages"
+        :class="{ disabled: currentPage === totalPages }">
+        Next
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </button>
     </div>
 
     <!-- No Results Message -->
@@ -45,12 +71,8 @@
     </div>
 
     <!-- StallApplicationContainer.vue -->
-    <StallApplicationContainer
-      v-if="showApplyForm"
-      :stall="selectedStall"
-      :showForm="showApplyForm"
-      @close="closeApplyForm"
-    />
+    <StallApplicationContainer v-if="showApplyForm" :stall="selectedStall" :showForm="showApplyForm"
+      @close="closeApplyForm" />
   </div>
 </template>
 
@@ -76,6 +98,8 @@ export default {
       error: null,
       showApplyForm: false,
       selectedStall: null,
+      currentPage: 1,
+      stallsPerPage: 6,
       // API configuration
       apiBaseUrl: process.env.VUE_APP_API_URL || "http://localhost:3001",
     };
@@ -88,12 +112,21 @@ export default {
       }
       return this.stalls.filter((stall) => stall.market === market);
     },
+    totalPages() {
+      return Math.ceil(this.filteredStalls.length / this.stallsPerPage);
+    },
+    paginatedStalls() {
+      const startIndex = (this.currentPage - 1) * this.stallsPerPage;
+      const endIndex = startIndex + this.stallsPerPage;
+      return this.filteredStalls.slice(startIndex, endIndex);
+    },
   },
   watch: {
     selectedMarket: {
       immediate: true,
       handler(newMarket) {
         this.internalMarket = newMarket;
+        this.currentPage = 1; // Reset to first page when market changes
       },
     },
   },
@@ -224,8 +257,8 @@ export default {
           location === "all"
             ? `${this.apiBaseUrl}/api/stalls`
             : `${this.apiBaseUrl}/api/stalls/filter?location=${encodeURIComponent(
-                location
-              )}`;
+              location
+            )}`;
 
         const response = await fetch(url, {
           method: "GET",
@@ -265,6 +298,19 @@ export default {
     closeApplyForm() {
       this.showApplyForm = false;
       this.selectedStall = null;
+    },
+
+    // Pagination methods
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },
+
+    previousPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
     },
   },
 };

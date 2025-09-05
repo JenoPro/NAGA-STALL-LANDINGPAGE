@@ -16,11 +16,11 @@
     </div>
   </div>
 
-  <!-- Available stalls section with animation -->
-  <transition name="popup">
+  <!-- Available stalls section -->
+  <transition name="fade" mode="out-in">
     <div v-if="showAvailableStalls">
       <!-- Pass the selectedMarket as a prop to AvailableStalls -->
-      <AvailableStalls :selectedMarket="selectedMarket" />
+      <AvailableStalls :selectedMarket="selectedMarket" :key="selectedMarket" />
     </div>
   </transition>
 </template>
