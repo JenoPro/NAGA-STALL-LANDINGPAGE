@@ -52,85 +52,11 @@ export async function initializeDatabase() {
     // Now connect to the specific database
     dbConnection = await _createConnection(dbConfig)
 
-    // Create Admin table
-    const createAdminTable = `
-      CREATE TABLE IF NOT EXISTS Admin (
-        ID INT AUTO_INCREMENT PRIMARY KEY,
-        username VARCHAR(50) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        email VARCHAR(100),
-        first_name VARCHAR(50),
-        last_name VARCHAR(50),
-        role VARCHAR(20) DEFAULT 'admin',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        is_active BOOLEAN DEFAULT TRUE
-      )
-    `
+    // Since your tables already exist from the SQL dump, we just need to check/update admin
+    console.log('🔧 Checking existing database structure...')
 
-    console.log('🔧 Creating Admin table if not exists...')
-    await dbConnection.execute(createAdminTable)
-
-    // Create Stall table
-    const createStallTable = `
-      CREATE TABLE IF NOT EXISTS Stall (
-        ID INT AUTO_INCREMENT PRIMARY KEY,
-        stall_number VARCHAR(20) UNIQUE NOT NULL,
-        price DECIMAL(10, 2) NOT NULL,
-        floor VARCHAR(50) NOT NULL,
-        section VARCHAR(100) NOT NULL,
-        dimensions VARCHAR(50),
-        location VARCHAR(100) NOT NULL,
-        description TEXT,
-        image_url VARCHAR(500),
-        image_data LONGTEXT,
-        is_available BOOLEAN DEFAULT TRUE,
-        price_type ENUM('Raffle', 'Auction', 'Fixed Price') DEFAULT 'Fixed Price',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        created_by INT,
-        updated_by INT,
-        status ENUM('Active', 'Inactive', 'Maintenance') DEFAULT 'Active',
-        
-        INDEX idx_stall_number (stall_number),
-        INDEX idx_floor_section (floor, section),
-        INDEX idx_location (location),
-        INDEX idx_availability (is_available),
-        INDEX idx_status (status)
-      )
-    `
-
-    console.log('🔧 Creating Stall table if not exists...')
-    await dbConnection.execute(createStallTable)
-
-    // Add foreign key constraints after both tables are created
-    try {
-      await dbConnection.execute(`
-        ALTER TABLE Stall 
-        ADD CONSTRAINT fk_stall_created_by 
-        FOREIGN KEY (created_by) REFERENCES Admin(ID) ON DELETE SET NULL
-      `)
-    } catch (error) {
-      // Constraint might already exist, ignore error
-      if (!error.message.includes('Duplicate key name')) {
-        console.log('Foreign key constraint already exists or error:', error.message)
-      }
-    }
-
-    try {
-      await dbConnection.execute(`
-        ALTER TABLE Stall 
-        ADD CONSTRAINT fk_stall_updated_by 
-        FOREIGN KEY (updated_by) REFERENCES Admin(ID) ON DELETE SET NULL
-      `)
-    } catch (error) {
-      // Constraint might already exist, ignore error
-      if (!error.message.includes('Duplicate key name')) {
-        console.log('Foreign key constraint already exists or error:', error.message)
-      }
-    }
-
-    // Check if admin user exists
-    const [existingAdmin] = await dbConnection.execute('SELECT * FROM Admin WHERE username = ?', [
+    // Check if admin user exists (using correct column names from your schema)
+    const [existingAdmin] = await dbConnection.execute('SELECT * FROM admin WHERE admin_username = ?', [
       'admin',
     ])
 
@@ -139,125 +65,33 @@ export async function initializeDatabase() {
       const hashedPassword = await hash('admin123', 12)
 
       await dbConnection.execute(
-        'INSERT INTO Admin (username, password, email, first_name, last_name, role) VALUES (?, ?, ?, ?, ?, ?)',
-        ['admin', hashedPassword, 'admin@nagastall.com', 'System', 'Administrator', 'admin'],
+        'INSERT INTO admin (admin_username, admin_password_hash, email, status) VALUES (?, ?, ?, ?)',
+        ['admin', hashedPassword, 'admin@nagastall.com', 'Active'],
       )
 
       console.log('✅ Default admin user created successfully!')
     } else {
       console.log('✅ Admin user already exists')
 
-      // FORCE UPDATE the password to ensure it works
+      // Update the password to ensure it works
       console.log('🔧 Updating admin password to ensure compatibility...')
       const hashedPassword = await hash('admin123', 12)
-      await dbConnection.execute('UPDATE Admin SET password = ? WHERE username = ?', [
+      await dbConnection.execute('UPDATE admin SET admin_password_hash = ? WHERE admin_username = ?', [
         hashedPassword,
         'admin',
       ])
       console.log('✅ Admin password updated!')
     }
 
-    // Check if sample stalls exist
-    const [existingStalls] = await dbConnection.execute('SELECT COUNT(*) as count FROM Stall')
-
-    if (existingStalls[0].count === 0) {
-      console.log('🔧 Creating sample stalls...')
-
-      const sampleStalls = [
-        [
-          'STALL# 01',
-          1500.00,
-          '2nd Floor',
-          'Grocery Section',
-          '3x3 meters',
-          "Naga City People's Market",
-          'Ideal for selling fresh produce or packaged goods with high foot traffic.',
-          'https://oldspitalfieldsmarket.com/cms/2017/10/OSM_FP_Stall_sq.jpg',
-          'Fixed Price',
-          1,
-        ],
-        [
-          'STALL# 02',
-          1800.00,
-          'Ground Floor',
-          'Clothes Section',
-          '3x4 meters',
-          'Satellite Market',
-          'Spacious stall suited for clothing, bags, and accessories.',
-          'https://www.citybmarquees.com/assets/bulkUpload/skipton-3.JPG',
-          'Fixed Price',
-          1,
-        ],
-        [
-          'STALL# 03',
-          2000.00,
-          '2nd Floor',
-          'Electronics Section',
-          '2x3 meters',
-          "Naga City People's Market",
-          'Perfect for selling gadgets, phone accessories, and electronics.',
-          'https://i.pinimg.com/originals/60/17/ec/6017ec3acc17f3e0d729d882026f92eb.jpg',
-          'Fixed Price',
-          1,
-        ],
-        [
-          'STALL# 04',
-          1500.00,
-          '1st Floor',
-          'Grocery Section',
-          '3x3 meters',
-          'Satellite Market',
-          'Great for fresh fruits, vegetables, and snacks.',
-          'https://i.pinimg.com/originals/a1/f8/48/a1f848bbc36c70d936953841f1353f96.jpg',
-          'Fixed Price',
-          1,
-        ],
-        [
-          'STALL# 05',
-          2000.00,
-          '2nd Floor',
-          'Grocery Section',
-          '3x3 meters',
-          "Naga City People's Market",
-          'Strategic location for specialty food and beverages.',
-          'https://static.vecteezy.com/system/resources/previews/031/716/260/non_2x/the-street-of-organic-food-markets-marketplace-stalls-selling-fruits-and-vegetables-ai-generative-photo.jpg',
-          'Fixed Price',
-          1,
-        ],
-        [
-          'STALL# 06',
-          1500.00,
-          '2nd Floor',
-          'Grocery Section',
-          '3x3 meters',
-          'Satellite Market',
-          'Good spot for local delicacies and small retail items.',
-          'https://live.staticflickr.com/8182/8034543792_42cbc0ff26_b.jpg',
-          'Fixed Price',
-          1,
-        ],
-      ]
-
-      for (const stall of sampleStalls) {
-        await dbConnection.execute(
-          `
-          INSERT INTO Stall (
-            stall_number, price, floor, section, dimensions, 
-            location, description, image_url, price_type, created_by
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `,
-          stall,
-        )
-      }
-
-      console.log('✅ Sample stalls created successfully!')
-    } else {
-      console.log('✅ Stalls already exist in database')
-    }
+    // Check stalls count (using correct table name from your schema)
+    const [existingStalls] = await dbConnection.execute('SELECT COUNT(*) as count FROM stall')
+    console.log(`📊 Current stalls in database: ${existingStalls[0].count}`)
 
     console.log('📋 Login Credentials:')
     console.log('   Username: admin')
     console.log('   Password: admin123')
+    console.log('✅ Database initialization completed!')
+
   } catch (error) {
     console.error('❌ Database initialization failed:', error)
     throw error
@@ -271,8 +105,10 @@ export async function testConnection() {
   let connection
   try {
     connection = await createConnection()
-    const [adminRows] = await connection.execute('SELECT COUNT(*) as count FROM Admin')
-    const [stallRows] = await connection.execute('SELECT COUNT(*) as count FROM Stall')
+    
+    // Use correct table names from your schema
+    const [adminRows] = await connection.execute('SELECT COUNT(*) as count FROM admin')
+    const [stallRows] = await connection.execute('SELECT COUNT(*) as count FROM stall')
 
     return {
       success: true,
