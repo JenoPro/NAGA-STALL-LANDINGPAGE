@@ -107,18 +107,18 @@ export default {
             const address = this.mailingAddress.trim();
 
             if (!name || !this.education || !this.birthdate || !this.civilStatus || !contact || !address) {
-                alert("Please fill in all required fields.");
+                console.error("Please fill in all required fields.");
                 return;
             }
 
             if (this.calculatedAge < 18) {
-                alert("Applicant must be at least 18 years old.");
+                console.error("Applicant must be at least 18 years old.");
                 return;
             }
 
             const phonePattern = /^09\d{9}$/;
             if (!phonePattern.test(contact)) {
-                alert("Contact number must be 11 digits and start with '09'.");
+                console.error("Contact number must be 11 digits and start with '09'.");
                 return;
             }
 
@@ -139,4 +139,4 @@ export default {
 };
 </script>
 
-<style scoped src="../../../assets/css/applicationformstyle.css"></style>
+<style scoped src="../../../../assets/css/applicationformstyle.css"></style>

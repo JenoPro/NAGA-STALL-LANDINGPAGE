@@ -3,6 +3,8 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import { initializeDatabase, testConnection } from './config/database.js'
 import stallRoutes from './routes/stallRoutes.js'
+import applicantRoutes from './routes/applicantRoutes.js'
+import applicationRoutes from './routes/applicationRoutes.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { corsConfig } from './middleware/cors.js'
 
@@ -21,6 +23,8 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
 // Routes
 app.use('/api/stalls', stallRoutes)
+app.use('/api/applicants', applicantRoutes)
+app.use('/api/applications', applicationRoutes)
 
 // Health check endpoint
 app.get('/api/health', async (req, res) => {

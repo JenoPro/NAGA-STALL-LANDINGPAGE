@@ -27,4 +27,4 @@ export default {
 };
 </script>
 
-<style scoped src="./Global.css"></style>
+<style scoped src="../assets/css/Global.css"></style>

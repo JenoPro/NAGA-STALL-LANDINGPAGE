@@ -6,8 +6,8 @@
       <div class="search-field">
         <div class="search-input-wrapper">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="search-icon">
-            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
-            <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" />
+            <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" />
           </svg>
           <input
             v-model="filters.search"
@@ -22,26 +22,53 @@
       <!-- Filter Button (Right Side) -->
       <div class="filter-sort-container">
         <div class="filter-container" ref="filterContainer">
-          <button 
-            @click="toggleFilters" 
+          <button
+            @click="toggleFilters"
             class="filter-btn"
             :class="{ 'filter-active': showFilters }"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="filter-icon">
-              <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <path d="M7 12H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <path d="M10 18H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              class="filter-icon"
+            >
+              <path
+                d="M3 6H21"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M7 12H17"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M10 18H14"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
             </svg>
             Filter & Sort
-            <svg 
-              width="16" 
-              height="16" 
-              viewBox="0 0 24 24" 
-              fill="none" 
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
               class="chevron-icon"
               :class="{ 'chevron-up': showFilters }"
             >
-              <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path
+                d="M6 9L12 15L18 9"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </button>
 
@@ -51,26 +78,84 @@
               <div class="filter-card">
                 <div class="filter-header">
                   <div class="filter-header-content">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="header-icon">
-                      <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                      <path d="M7 12H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                      <path d="M10 18H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      class="header-icon"
+                    >
+                      <path
+                        d="M3 6H21"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M7 12H17"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M10 18H14"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
                     </svg>
                     <h6 class="filter-title">Filter Options</h6>
                   </div>
                   <button @click="showFilters = false" class="close-btn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
-                      <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/>
+                      <line
+                        x1="18"
+                        y1="6"
+                        x2="6"
+                        y2="18"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      />
+                      <line
+                        x1="6"
+                        y1="6"
+                        x2="18"
+                        y2="18"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      />
                     </svg>
                   </button>
                 </div>
 
                 <div class="filter-content">
+                  <!-- Location Filter -->
+                  <div class="filter-group">
+                    <label class="filter-label">Location</label>
+                    <select
+                      v-model="filters.location"
+                      @change="handleFilterChange"
+                      class="filter-select"
+                    >
+                      <option value="">All Locations</option>
+                      <option
+                        v-for="location in availableLocations"
+                        :key="location.location"
+                        :value="location.location"
+                      >
+                        {{ location.location }}
+                      </option>
+                    </select>
+                  </div>
+
                   <!-- Floor Filter -->
                   <div class="filter-group">
                     <label class="filter-label">Floor</label>
-                    <select v-model="filters.floor" @change="handleFilterChange" class="filter-select">
+                    <select
+                      v-model="filters.floor"
+                      @change="handleFilterChange"
+                      class="filter-select"
+                    >
                       <option value="">All Floors</option>
                       <option value="Ground Floor">Ground Floor</option>
                       <option value="Second Floor">Second Floor</option>
@@ -81,7 +166,11 @@
                   <!-- Section Filter -->
                   <div class="filter-group">
                     <label class="filter-label">Section</label>
-                    <select v-model="filters.section" @change="handleFilterChange" class="filter-select">
+                    <select
+                      v-model="filters.section"
+                      @change="handleFilterChange"
+                      class="filter-select"
+                    >
                       <option value="">All Sections</option>
                       <option value="Grocery Section">Grocery Section</option>
                       <option value="Meat Section">Meat Section</option>
@@ -93,25 +182,14 @@
                     </select>
                   </div>
 
-                  <!-- Location Filter -->
-                  <div class="filter-group">
-                    <label class="filter-label">Location</label>
-                    <select v-model="filters.location" @change="handleFilterChange" class="filter-select">
-                      <option value="">All Locations</option>
-                      <option 
-                        v-for="location in availableLocations" 
-                        :key="location.location"
-                        :value="location.location"
-                      >
-                        {{ location.location }}
-                      </option>
-                    </select>
-                  </div>
-
                   <!-- Sort By Filter -->
                   <div class="filter-group">
                     <label class="filter-label">Sort By</label>
-                    <select v-model="filters.sortBy" @change="handleFilterChange" class="filter-select">
+                    <select
+                      v-model="filters.sortBy"
+                      @change="handleFilterChange"
+                      class="filter-select"
+                    >
                       <option value="default">Default</option>
                       <option value="price-low">Price: Low to High</option>
                       <option value="price-high">Price: High to Low</option>
@@ -151,7 +229,11 @@
         <span v-if="filters.location" class="filter-tag" @click="clearFilter('location')">
           Location: {{ filters.location }} ×
         </span>
-        <span v-if="filters.sortBy !== 'default'" class="filter-tag" @click="clearFilter('sortBy')">
+        <span
+          v-if="filters.sortBy !== 'default'"
+          class="filter-tag"
+          @click="clearFilter('sortBy')"
+        >
           Sort: {{ getSortLabel(filters.sortBy) }} ×
         </span>
         <span v-if="filters.search" class="filter-tag" @click="clearFilter('search')">
@@ -164,133 +246,136 @@
 
 <script>
 export default {
-  name: 'StallFilter',
+  name: "StallFilter",
   props: {
     selectedArea: {
       type: String,
-      required: true
+      required: true,
     },
     availableLocations: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     loading: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
       showFilters: false,
       filters: {
-        location: '',
-        section: '',
-        floor: '',
-        search: '',
-        sortBy: 'default'
+        location: "",
+        section: "",
+        floor: "",
+        search: "",
+        sortBy: "default",
       },
-      searchTimeout: null
-    }
+      searchTimeout: null,
+    };
   },
   computed: {
     hasActiveFilters() {
-      return Object.values(this.filters).some(value => 
-        value && value.toString().trim() !== '' && value !== 'default'
-      )
-    }
+      return Object.values(this.filters).some(
+        (value) => value && value.toString().trim() !== "" && value !== "default"
+      );
+    },
   },
   watch: {
     selectedArea() {
       // Reset filters when area changes
-      this.clearAllFilters()
-    }
+      this.clearAllFilters();
+    },
   },
   mounted() {
     // Close dropdown when clicking outside
-    document.addEventListener('click', this.handleOutsideClick)
-    document.addEventListener('keydown', this.handleKeyDown)
+    document.addEventListener("click", this.handleOutsideClick);
+    document.addEventListener("keydown", this.handleKeyDown);
   },
   beforeUnmount() {
-    document.removeEventListener('click', this.handleOutsideClick)
-    document.removeEventListener('keydown', this.handleKeyDown)
-    
+    document.removeEventListener("click", this.handleOutsideClick);
+    document.removeEventListener("keydown", this.handleKeyDown);
+
     if (this.searchTimeout) {
-      clearTimeout(this.searchTimeout)
+      clearTimeout(this.searchTimeout);
     }
   },
   methods: {
     toggleFilters() {
-      this.showFilters = !this.showFilters
+      this.showFilters = !this.showFilters;
     },
 
     handleFilterChange() {
       // Emit filter changes immediately for selects
-      this.$emit('filter-changed', { ...this.filters })
+      this.$emit("filter-changed", { ...this.filters });
     },
 
     handleSearchInput() {
       // Debounce search input
       if (this.searchTimeout) {
-        clearTimeout(this.searchTimeout)
+        clearTimeout(this.searchTimeout);
       }
-      
+
       this.searchTimeout = setTimeout(() => {
-        this.$emit('search-changed', this.filters.search)
-      }, 500)
+        this.$emit("search-changed", this.filters.search);
+      }, 500);
     },
 
     clearFilter(filterName) {
-      if (filterName === 'sortBy') {
-        this.filters[filterName] = 'default'
+      if (filterName === "sortBy") {
+        this.filters[filterName] = "default";
       } else {
-        this.filters[filterName] = ''
+        this.filters[filterName] = "";
       }
-      this.handleFilterChange()
+      this.handleFilterChange();
     },
 
     clearAllFilters() {
       this.filters = {
-        location: '',
-        section: '',
-        floor: '',
-        search: '',
-        sortBy: 'default'
-      }
-      this.handleFilterChange()
+        location: "",
+        section: "",
+        floor: "",
+        search: "",
+        sortBy: "default",
+      };
+      this.handleFilterChange();
     },
 
     applyFilters() {
-      this.handleFilterChange()
-      this.showFilters = false
+      this.handleFilterChange();
+      this.showFilters = false;
     },
 
     getSortLabel(value) {
       const options = {
-        'default': 'Default',
-        'price-low': 'Price: Low to High',
-        'price-high': 'Price: High to Low',
-        'stall-number': 'Stall Number',
-        'newest': 'Newest First'
-      }
-      return options[value] || value
+        default: "Default",
+        "price-low": "Price: Low to High",
+        "price-high": "Price: High to Low",
+        "stall-number": "Stall Number",
+        newest: "Newest First",
+      };
+      return options[value] || value;
     },
 
     handleOutsideClick(event) {
-      if (this.$refs.filterContainer && !this.$refs.filterContainer.contains(event.target)) {
-        this.showFilters = false
+      if (
+        this.$refs.filterContainer &&
+        !this.$refs.filterContainer.contains(event.target)
+      ) {
+        this.showFilters = false;
       }
     },
 
     handleKeyDown(event) {
       // Close on Escape key
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         if (this.showFilters) {
-          this.showFilters = false
+          this.showFilters = false;
         }
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
-<style scoped src="./StallFilter.css"></style>
+<style scoped src="../../../assets/css/StallFilter.css"></style>

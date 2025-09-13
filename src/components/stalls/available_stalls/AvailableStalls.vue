@@ -111,7 +111,7 @@
 </template>
 
 <script>
-import StallApplicationContainer from "../apply/StallApplicationContainer.vue";
+import StallApplicationContainer from "../StallApplicationContainer.vue";
 
 export default {
   name: "AvailableStalls",

@@ -33,7 +33,6 @@
 </template>
 
 <script>
-import Swal from 'sweetalert2';
 export default {
     name: 'OtherInformation',
     emits: ['previous', 'next', 'close'],
@@ -62,38 +61,26 @@ export default {
         },
         goNext() {
             if (!this.applicantSignature || !this.applicantLocation || !this.applicantValidID || !this.emailAddress) {
-                Swal.fire("Incomplete Fields", "Please fill in all required fields.", "warning");
+                console.error("Please fill in all required fields.");
                 return;
             }
 
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailPattern.test(this.emailAddress)) {
-                Swal.fire("Invalid Email", "Please enter a valid email address.", "error");
+                console.error("Please enter a valid email address.");
                 return;
             }
 
-            Swal.fire({
-                title: "Application Submitted",
-                text: "The admin will review your application, upon approval. The provided account will be sent directly to your contact number or email address.",
-                icon: "success",
-                confirmButtonText: "OK",
-                customClass: {
-                    popup: 'swal-custom-popup',
-                    confirmButton: 'btn-next'
-                },
-                buttonsStyling: false
-            }).then(() => {
-                const otherInfoData = {
-                    applicantSignature: this.applicantSignature,
-                    applicantLocation: this.applicantLocation,
-                    applicantValidID: this.applicantValidID,
-                    emailAddress: this.emailAddress
-                };
-                this.$emit('next', otherInfoData);
-            });
+            const otherInfoData = {
+                applicantSignature: this.applicantSignature,
+                applicantLocation: this.applicantLocation,
+                applicantValidID: this.applicantValidID,
+                emailAddress: this.emailAddress
+            };
+            this.$emit('next', otherInfoData);
         }
     }
 };
 </script>
 
-<style scoped src="../../../assets/css/applicationformstyle.css"></style>
+<style scoped src="../../../../assets/css/applicationformstyle.css"></style>

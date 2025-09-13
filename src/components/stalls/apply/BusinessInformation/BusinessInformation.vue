@@ -101,18 +101,18 @@ export default {
     methods: {
         goNext() {
             if (!this.natureOfBusiness || !this.businessCapitalization || !this.sourceOfCapital || !this.previousBusiness) {
-                alert("Please fill in all required fields.");
+                console.error("Please fill in all required fields.");
                 return;
             }
 
             // Additional validation for "Other" selection
             if (this.natureOfBusiness === 'Other' && !this.otherBusinessType.trim()) {
-                alert("Please specify your business type.");
+                console.error("Please specify your business type.");
                 return;
             }
 
             if (this.businessCapitalization <= 0) {
-                alert("Capitalization must be greater than zero.");
+                console.error("Capitalization must be greater than zero.");
                 return;
             }
 
@@ -134,4 +134,4 @@ export default {
 }
 </script>
 
-<style scoped src="../../../assets/css/applicationformstyle.css"></style>
+<style scoped src="../../../../assets/css/applicationformstyle.css"></style>

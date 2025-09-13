@@ -34,4 +34,4 @@
 
 <script src="./StallSection.js"></script>
 
-<style src="./StallSection.css" scoped></style>
+<style src="../../assets/css/StallSection.css" scoped></style>
