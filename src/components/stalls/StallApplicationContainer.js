@@ -2,6 +2,7 @@ import PersonalInformation from "./apply/PersonalInformation/PersonalInformation
 import SpouseInformation from "./apply/SpouseInformation/SpouseInformation.vue";
 import BusinessInformation from "./apply/BusinessInformation/BusinessInformation.vue";
 import OtherInformation from "./apply/OtherInformation/OtherInformation.vue";
+import ApplicationLoadingOverlay from "../common/ApplicationLoadingOverlay.vue";
 
 export default {
   name: "ApplicationForm",
@@ -10,6 +11,7 @@ export default {
     SpouseInformation,
     BusinessInformation,
     OtherInformation,
+    ApplicationLoadingOverlay,
   },
   props: {
     stall: Object,
@@ -27,6 +29,8 @@ export default {
       businessInfo: null,
       otherInfo: null,
       isSubmitting: false,
+      loadingState: 'preparing', // 'preparing', 'submitting', 'success', 'error'
+      loadingErrorMessage: '',
       apiBaseUrl: process.env.VUE_APP_API_URL || "http://localhost:3001/api",
     };
   },
@@ -85,21 +89,35 @@ export default {
     async handleOtherInfoNext(otherInfoData) {
       this.otherInfo = otherInfoData;
       this.isSubmitting = true;
+      this.loadingState = 'preparing';
 
       try {
         console.log('Starting application submission...');
+        
+        // Step 1: Preparing state (simulate preparation time)
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
         // Prepare the complete application data
         const applicationData = await this.prepareApplicationData();
         console.log('Prepared application data:', applicationData);
 
+        // Step 2: Submitting state
+        this.loadingState = 'submitting';
+        await new Promise(resolve => setTimeout(resolve, 800));
+
         // Submit to backend
         const result = await this.submitApplication(applicationData);
         console.log('Submission result:', result);
 
+        // Step 3: Success state
+        this.loadingState = 'success';
         console.log('Application submitted successfully!', result);
         
-        this.closeForm();
+        // Show success state for 3 seconds before closing
+        setTimeout(() => {
+          this.closeForm();
+        }, 3000);
+        
       } catch (error) {
         console.error('Full error object:', error);
         
@@ -119,7 +137,9 @@ export default {
         }
 
         console.error(`Submission failed: ${errorMessage}`, { apiBaseUrl: this.apiBaseUrl, error });
-        this.isSubmitting = false;
+        
+        this.loadingState = 'error';
+        this.loadingErrorMessage = errorMessage;
       }
     },
 
@@ -243,6 +263,13 @@ export default {
       }
     },
 
+    retrySubmission() {
+      // Reset loading state and retry the submission
+      this.loadingState = 'preparing';
+      this.loadingErrorMessage = '';
+      this.handleOtherInfoNext(this.otherInfo);
+    },
+
     resetForm() {
       this.currentStep = 1;
       this.personalInfo = null;
@@ -250,6 +277,8 @@ export default {
       this.businessInfo = null;
       this.otherInfo = null;
       this.isSubmitting = false;
+      this.loadingState = 'preparing';
+      this.loadingErrorMessage = '';
     },
   },
 };
