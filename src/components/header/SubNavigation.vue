@@ -54,6 +54,13 @@
 import AvailableStalls from "@/components/stalls/available_stalls/AvailableStalls.vue";
 import StallFilter from "@/components/stalls/filter/StallFilter.vue";
 
+// Import services
+import FetchService from "./SubNavigationComponents/fetch/FetchService.js";
+import DataTransformService from "./SubNavigationComponents/transforms/DataTransformService.js";
+import FilterService from "./SubNavigationComponents/filters/FilterService.js";
+import UIHelperService from "./SubNavigationComponents/ui-helpers/UIHelperService.js";
+import ErrorHandlingService from "./SubNavigationComponents/error-handling/ErrorHandlingService.js";
+
 export default {
   name: "SubNavigation",
   components: {
@@ -70,13 +77,7 @@ export default {
       // Filter management
       availableLocations: [],
       filteredStalls: [],
-      currentFilters: {
-        location: "",
-        section: "",
-        minPrice: "",
-        maxPrice: "",
-        search: "",
-      },
+      currentFilters: FilterService.getInitialFilters(),
       filterKey: 0, // For forcing component re-render
 
       // Loading states
@@ -91,23 +92,28 @@ export default {
       // Overflow detection
       hasOverflow: false,
 
-      // API configuration
-      apiBaseUrl: process.env.VUE_APP_API_URL || "http://localhost:3001",
+      // Cleanup function for resize listener
+      resizeCleanup: null,
     };
   },
 
   async mounted() {
     await this.fetchAreas();
-    // Check for overflow after areas are loaded
+    // Check for overflow after areas are loaded and setup resize listener
     this.$nextTick(() => {
       this.checkOverflow();
-      // Add resize listener
-      window.addEventListener('resize', this.checkOverflow);
+      // Setup resize listener with cleanup function
+      this.resizeCleanup = UIHelperService.setupResizeListener(() => {
+        this.checkOverflow();
+      });
     });
   },
 
   beforeUnmount() {
-    window.removeEventListener('resize', this.checkOverflow);
+    // Clean up resize listener
+    if (this.resizeCleanup) {
+      this.resizeCleanup();
+    }
   },
 
   methods: {
@@ -116,7 +122,7 @@ export default {
       this.$nextTick(() => {
         const container = this.$refs.scrollableContainer;
         if (container) {
-          this.hasOverflow = container.scrollWidth > container.clientWidth;
+          this.hasOverflow = UIHelperService.checkOverflow(container);
         }
       });
     },
@@ -127,35 +133,14 @@ export default {
       this.error = null;
 
       try {
-        console.log("Fetching areas from:", `${this.apiBaseUrl}/api/stalls/areas`);
-
-        const response = await fetch(`${this.apiBaseUrl}/api/stalls/areas`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+        this.availableAreas = await FetchService.fetchAreas();
+        // Check for overflow after areas are loaded
+        this.$nextTick(() => {
+          this.checkOverflow();
         });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        console.log("Areas API Response:", result);
-
-        if (result.success) {
-          this.availableAreas = result.data;
-          console.log(`Successfully loaded ${this.availableAreas.length} areas`);
-          // Check for overflow after areas are loaded
-          this.$nextTick(() => {
-            this.checkOverflow();
-          });
-        } else {
-          throw new Error(result.message || "Failed to fetch areas");
-        }
       } catch (error) {
-        console.error("Error fetching areas:", error);
-        this.error = this.handleNetworkError(error);
+        ErrorHandlingService.logError(error, 'fetchAreas');
+        this.error = ErrorHandlingService.handleNetworkError(error);
       } finally {
         this.loading = false;
       }
@@ -163,21 +148,24 @@ export default {
 
     // Handle area selection
     async handleAreaFilter(area) {
-      // If same area is clicked and container is open, close it
-      if (this.selectedArea === area && this.showStallsContainer) {
-        this.showStallsContainer = false;
-        this.selectedArea = null;
-        this.resetFilters();
-      } else {
-        // Set the area and show container
-        this.selectedArea = area;
-        this.showStallsContainer = true;
-        this.resetFilters();
+      const selectionResult = UIHelperService.handleAreaSelection(
+        this.selectedArea, 
+        area, 
+        this.showStallsContainer
+      );
 
-        // Fetch locations for this area and initial stalls
+      this.selectedArea = selectionResult.selectedArea;
+      this.showStallsContainer = selectionResult.showStallsContainer;
+
+      if (selectionResult.shouldReset) {
+        this.resetFilters();
+      }
+
+      // If area is selected, fetch locations and stalls
+      if (this.selectedArea) {
         await Promise.all([
-          this.fetchLocationsByArea(area),
-          this.fetchStallsByArea(area),
+          this.fetchLocationsByArea(this.selectedArea),
+          this.fetchStallsByArea(this.selectedArea),
         ]);
       }
     },
@@ -187,30 +175,9 @@ export default {
       this.filterLoading = true;
 
       try {
-        const response = await fetch(
-          `${this.apiBaseUrl}/api/stalls/locations?area=${encodeURIComponent(area)}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-
-        if (result.success) {
-          this.availableLocations = result.data;
-          console.log(`Loaded ${this.availableLocations.length} locations for ${area}`);
-        } else {
-          throw new Error(result.message || "Failed to fetch locations");
-        }
+        this.availableLocations = await FetchService.fetchLocationsByArea(area);
       } catch (error) {
-        console.error("Error fetching locations:", error);
+        ErrorHandlingService.logError(error, 'fetchLocationsByArea', { area });
         // Don't show error for locations, just log it
       } finally {
         this.filterLoading = false;
@@ -223,33 +190,11 @@ export default {
       this.stallsError = null;
 
       try {
-        const response = await fetch(
-          `${this.apiBaseUrl}/api/stalls/by-area?area=${encodeURIComponent(area)}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-
-        if (result.success) {
-          this.filteredStalls = result.data.map((stall) =>
-            this.transformStallData(stall)
-          );
-          console.log(`Loaded ${this.filteredStalls.length} stalls for ${area}`);
-        } else {
-          throw new Error(result.message || "Failed to fetch stalls");
-        }
+        const stallsData = await FetchService.fetchStallsByArea(area);
+        this.filteredStalls = DataTransformService.transformStallsArray(stallsData);
       } catch (error) {
-        console.error("Error fetching stalls:", error);
-        this.stallsError = this.handleNetworkError(error);
+        ErrorHandlingService.logError(error, 'fetchStallsByArea', { area });
+        this.stallsError = ErrorHandlingService.handleNetworkError(error);
       } finally {
         this.stallsLoading = false;
       }
@@ -257,15 +202,15 @@ export default {
 
     // Handle filter changes from StallFilter component
     async handleFilterChanged(filters) {
-      this.currentFilters = { ...this.currentFilters, ...filters };
-      this.filterKey++; // Force re-render
+      this.currentFilters = FilterService.handleFilterChanged(this.currentFilters, filters);
+      this.filterKey = UIHelperService.generateNewKey(this.filterKey);
       await this.applyFilters();
     },
 
     // Handle search changes
     async handleSearchChanged(searchTerm) {
-      this.currentFilters.search = searchTerm;
-      this.filterKey++;
+      this.currentFilters = FilterService.handleSearchChanged(this.currentFilters, searchTerm);
+      this.filterKey = UIHelperService.generateNewKey(this.filterKey);
       await this.applyFilters();
     },
 
@@ -275,140 +220,31 @@ export default {
       this.stallsError = null;
 
       try {
-        // Build query parameters
-        const params = new URLSearchParams();
+        console.log("Applying filters:", FilterService.getFilterSummary(this.currentFilters));
 
-        // Always include the selected area
-        params.append("area", this.selectedArea);
-
-        // Add other filters if they have values
-        Object.keys(this.currentFilters).forEach((key) => {
-          const value = this.currentFilters[key];
-          if (value && value.toString().trim() !== "") {
-            params.append(key, value);
-          }
-        });
-
-        console.log("Applying filters:", params.toString());
-
-        const response = await fetch(
-          `${this.apiBaseUrl}/api/stalls/filter?${params.toString()}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
+        const stallsData = await FetchService.fetchFilteredStalls(
+          this.selectedArea, 
+          this.currentFilters
         );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-
-        if (result.success) {
-          this.filteredStalls = result.data.map((stall) =>
-            this.transformStallData(stall)
-          );
-          console.log(`Filtered results: ${this.filteredStalls.length} stalls`);
-        } else {
-          throw new Error(result.message || "Failed to filter stalls");
-        }
+        
+        this.filteredStalls = DataTransformService.transformStallsArray(stallsData);
       } catch (error) {
-        console.error("Error applying filters:", error);
-        this.stallsError = this.handleNetworkError(error);
+        ErrorHandlingService.logError(error, 'applyFilters', { 
+          area: this.selectedArea,
+          filters: this.currentFilters 
+        });
+        this.stallsError = ErrorHandlingService.handleNetworkError(error);
       } finally {
         this.stallsLoading = false;
       }
     },
 
-    // Transform backend stall data to frontend format
-    transformStallData(stall) {
-      return {
-        id: stall.stall_id,
-        stallNumber: stall.stall_no,
-        price: this.formatPrice(stall.rental_price, stall.price_type),
-        floor: stall.floor,
-        section: stall.section,
-        dimensions: stall.size || "3x3 meters",
-        location: stall.stall_location,
-        area: stall.area,
-        branchLocation: stall.branch_location,
-        description: stall.description,
-        image: stall.stall_image || this.getDefaultImage(stall.section),
-        isAvailable: stall.status === "Active",
-        priceType: stall.price_type,
-        status: stall.status,
-        createdAt: stall.created_at,
-        // Manager info
-        managerName: stall.manager_first_name
-          ? `${stall.manager_first_name} ${stall.manager_last_name}`
-          : "Unknown",
-      };
-    },
-
-    // Format price display based on type
-    formatPrice(price, priceType) {
-      const formattedPrice = `${parseFloat(price).toLocaleString()} Php`;
-
-      switch (priceType) {
-        case "Raffle":
-          return `${formattedPrice} / Raffle`;
-        case "Auction":
-          return `${formattedPrice} Min. / Auction`;
-        case "Fixed Price":
-        default:
-          return `${formattedPrice} / Monthly`;
-      }
-    },
-
-    // Get default image based on section
-    getDefaultImage(section) {
-      const defaultImages = {
-        "Grocery Section":
-          "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400",
-        "Meat Section":
-          "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=400",
-        "Fresh Produce":
-          "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400",
-        "Clothing Section":
-          "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400",
-        "Electronics Section":
-          "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400",
-        "Food Court":
-          "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400",
-      };
-      return (
-        defaultImages[section] ||
-        "https://oldspitalfieldsmarket.com/cms/2017/10/OSM_FP_Stall_sq.jpg"
-      );
-    },
-
     // Reset filters
     resetFilters() {
-      this.currentFilters = {
-        location: "",
-        section: "",
-        minPrice: "",
-        maxPrice: "",
-        search: "",
-      };
+      this.currentFilters = FilterService.resetFilters();
       this.filteredStalls = [];
       this.availableLocations = [];
-      this.filterKey++;
-    },
-
-    // Handle network errors
-    handleNetworkError(error) {
-      if (error.message.includes("fetch")) {
-        return "Network connection failed. Please check your internet connection.";
-      } else if (error.message.includes("500")) {
-        return "Server error. Please try again later.";
-      } else if (error.message.includes("404")) {
-        return "API endpoint not found. Please check if the backend server is running.";
-      }
-      return error.message || "An unexpected error occurred";
+      this.filterKey = UIHelperService.generateNewKey(this.filterKey);
     },
   },
 };
