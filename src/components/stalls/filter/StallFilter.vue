@@ -283,12 +283,10 @@ export default {
   },
   watch: {
     selectedArea() {
-      // Reset filters when area changes
       this.clearAllFilters();
     },
   },
   mounted() {
-    // Close dropdown when clicking outside
     document.addEventListener("click", this.handleOutsideClick);
     document.addEventListener("keydown", this.handleKeyDown);
   },
@@ -306,12 +304,10 @@ export default {
     },
 
     handleFilterChange() {
-      // Emit filter changes immediately for selects
       this.$emit("filter-changed", { ...this.filters });
     },
 
     handleSearchInput() {
-      // Debounce search input
       if (this.searchTimeout) {
         clearTimeout(this.searchTimeout);
       }
@@ -367,7 +363,6 @@ export default {
     },
 
     handleKeyDown(event) {
-      // Close on Escape key
       if (event.key === "Escape") {
         if (this.showFilters) {
           this.showFilters = false;

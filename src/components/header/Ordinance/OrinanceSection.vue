@@ -176,7 +176,6 @@ export default {
     methods: {
         closeOrdinanceModal() {
             this.isOrdinanceModalVisible = false;
-            // Restore body scrolling
             document.body.style.overflow = 'auto';
             this.$emit('close-modal');
         },
@@ -184,16 +183,13 @@ export default {
     watch: {
         isVisible(newVal) {
             if (newVal) {
-                // Prevent body scrolling when modal is open
                 document.body.style.overflow = 'hidden';
             } else {
-                // Restore body scrolling when modal is closed
                 document.body.style.overflow = 'auto';
             }
         }
     },
     mounted() {
-        // Close modal on Escape key press
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.isOrdinanceModalVisible) {
                 this.closeOrdinanceModal();
@@ -201,7 +197,6 @@ export default {
         });
     },
     beforeUnmount() {
-        // Clean up event listener and restore scrolling
         document.removeEventListener('keydown', this.closeOrdinanceModal);
         document.body.style.overflow = 'auto';
     },

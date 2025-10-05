@@ -29,34 +29,36 @@ export default {
       businessInfo: null,
       otherInfo: null,
       isSubmitting: false,
-      loadingState: 'preparing', // 'preparing', 'submitting', 'success', 'error'
-      loadingErrorMessage: '',
+      loadingState: "preparing", // 'preparing', 'submitting', 'success', 'error'
+      loadingErrorMessage: "",
       apiBaseUrl: process.env.VUE_APP_API_URL || "http://localhost:3001/api",
     };
   },
   methods: {
     async testApiConnection() {
       try {
-        console.log('Testing API connection...');
-        console.log('API Base URL:', this.apiBaseUrl);
-        
-        // Test 1: Health check
-        console.log('Testing health endpoint...');
-        const healthResponse = await fetch(`${this.apiBaseUrl.replace('/api', '')}/api/health`);
-        console.log('Health Status:', healthResponse.status);
+        console.log("Testing API connection...");
+        console.log("API Base URL:", this.apiBaseUrl);
+
+        console.log("Testing health endpoint...");
+        const healthResponse = await fetch(
+          `${this.apiBaseUrl.replace("/api", "")}/api/health`
+        );
+        console.log("Health Status:", healthResponse.status);
         const healthData = await healthResponse.text();
-        console.log('Health Response:', healthData);
+        console.log("Health Response:", healthData);
 
-        // Test 2: GET applicants
-        console.log('Testing GET /api/applicants...');
+        console.log("Testing GET /api/applicants...");
         const getResponse = await fetch(`${this.apiBaseUrl}/applicants`);
-        console.log('GET Applicants Status:', getResponse.status);
+        console.log("GET Applicants Status:", getResponse.status);
         const getData = await getResponse.text();
-        console.log('GET Applicants Response:', getData);
+        console.log("GET Applicants Response:", getData);
 
-        console.log(`API Test Results - Health: ${healthResponse.status}, GET Applicants: ${getResponse.status}`);
+        console.log(
+          `API Test Results - Health: ${healthResponse.status}, GET Applicants: ${getResponse.status}`
+        );
       } catch (error) {
-        console.error('API Test Error:', error);
+        console.error("API Test Error:", error);
       }
     },
 
@@ -89,56 +91,68 @@ export default {
     async handleOtherInfoNext(otherInfoData) {
       this.otherInfo = otherInfoData;
       this.isSubmitting = true;
-      this.loadingState = 'preparing';
+      this.loadingState = "preparing";
 
       try {
-        console.log('Starting application submission...');
-        
-        // Step 1: Preparing state (simulate preparation time)
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Prepare the complete application data
+        console.log("Starting application submission...");
+
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
         const applicationData = await this.prepareApplicationData();
-        console.log('Prepared application data:', applicationData);
+        console.log("Prepared application data:", applicationData);
 
-        // Step 2: Submitting state
-        this.loadingState = 'submitting';
-        await new Promise(resolve => setTimeout(resolve, 800));
+        this.loadingState = "submitting";
+        await new Promise((resolve) => setTimeout(resolve, 800));
 
-        // Submit to backend
         const result = await this.submitApplication(applicationData);
-        console.log('Submission result:', result);
+        console.log("Submission result:", result);
 
-        // Step 3: Success state
-        this.loadingState = 'success';
-        console.log('Application submitted successfully!', result);
-        
-        // Show success state for 3 seconds before closing
+        this.loadingState = "success";
+        console.log("Application submitted successfully!", result);
+
         setTimeout(() => {
           this.closeForm();
         }, 3000);
-        
       } catch (error) {
-        console.error('Full error object:', error);
-        
+        console.error("Full error object:", error);
+
         let errorMessage = "Failed to submit application. Please try again.";
 
-        // Check for network errors
-        if (error.message.includes('Failed to fetch')) {
-          errorMessage = "Network error: Cannot connect to server. Please check if the server is running on http://localhost:3001";
-        } else if (error.message.includes('HTTP 404')) {
-          errorMessage = "API endpoint not found (404). Please check server configuration.";
-        } else if (error.message.includes('HTTP 500')) {
+        if (error.message.includes("Failed to fetch")) {
+          errorMessage =
+            "Network error: Cannot connect to server. Please check if the server is running on http://localhost:3001";
+        } else if (error.message.includes("HTTP 404")) {
+          errorMessage =
+            "API endpoint not found (404). Please check server configuration.";
+        } else if (error.message.includes("HTTP 500")) {
           errorMessage = "Server error (500). Please check server logs.";
+        } else if (error.message.includes("Email address already exists")) {
+          errorMessage =
+            "This email address is already registered. Please use a different email address or contact support if this is your email.";
+        } else if (error.message.includes("HTTP 400")) {
+          // Try to extract the actual error message from the response
+          try {
+            const errorData = JSON.parse(
+              error.message.replace("HTTP 400: ", "")
+            );
+            errorMessage =
+              errorData.message ||
+              "Invalid application data. Please check all fields.";
+          } catch (parseError) {
+            errorMessage = "Invalid application data. Please check all fields.";
+          }
         } else if (error.response?.data?.message) {
           errorMessage = error.response.data.message;
         } else if (error.message) {
           errorMessage = error.message;
         }
 
-        console.error(`Submission failed: ${errorMessage}`, { apiBaseUrl: this.apiBaseUrl, error });
-        
-        this.loadingState = 'error';
+        console.error(`Submission failed: ${errorMessage}`, {
+          apiBaseUrl: this.apiBaseUrl,
+          error,
+        });
+
+        this.loadingState = "error";
         this.loadingErrorMessage = errorMessage;
       }
     },
@@ -149,9 +163,8 @@ export default {
       const business = this.businessInfo;
       const other = this.otherInfo;
 
-      // Map frontend field names to backend field names
       const applicationData = {
-        // Personal Information
+        // Personal Information - match backend field names
         applicant_full_name: personal.fullName,
         applicant_contact_number: personal.contactNumber,
         applicant_address: personal.mailingAddress,
@@ -159,7 +172,7 @@ export default {
         applicant_civil_status: personal.civilStatus,
         applicant_educational_attainment: personal.education,
 
-        // Spouse Information (if married)
+        // Spouse Information
         spouse_full_name: spouse?.spouseName || null,
         spouse_birthdate: spouse?.spouseBirthdate || null,
         spouse_educational_attainment: spouse?.spouseEducation || null,
@@ -184,76 +197,81 @@ export default {
     },
 
     async submitApplication(applicationData) {
-      console.log('API Base URL:', this.apiBaseUrl);
-      console.log('Application Data:', applicationData);
-      
-      // Step 1: Create the applicant record
-      const applicantResponse = await fetch(
-        `${this.apiBaseUrl}/applicants`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(applicationData)
-        }
-      );
+      console.log("API Base URL:", this.apiBaseUrl);
+      console.log("Application Data:", applicationData);
 
-      console.log('Applicant Response Status:', applicantResponse.status);
-      console.log('Applicant Response OK:', applicantResponse.ok);
-
-      if (!applicantResponse.ok) {
-        const errorText = await applicantResponse.text();
-        console.error('Applicant API Error:', errorText);
-        throw new Error(`HTTP ${applicantResponse.status}: ${errorText}`);
-      }
-
-      const applicantResult = await applicantResponse.json();
-
-      if (!applicantResult.success) {
-        throw new Error(
-          applicantResult.message || "Failed to create applicant"
-        );
-      }
-
-      const applicantId = applicantResult.data.applicant_id;
-
-      // Determine the correct stall ID property
       const stallId = this.stall.stall_id || this.stall.id || this.stall.ID;
 
       if (!stallId) {
         throw new Error("Stall ID not found in stall object");
       }
 
-      // Step 2: Create the application for the selected stall
-      const applicationPayload = {
+      // ✅ NEW APPROACH: Use the atomic endpoint that handles both applicant and application creation
+      const completeApplicationData = {
+        ...applicationData,
+        // Add application-specific fields
         stall_id: stallId,
-        applicant_id: applicantId,
         application_date: new Date().toISOString().split("T")[0],
       };
 
-      const applicationResponse = await fetch(
-        `${this.apiBaseUrl}/applications`,
+      console.log("Complete Application Data:", completeApplicationData);
+
+      // ✅ Single atomic call instead of two separate calls
+      const response = await fetch(
+        `${this.apiBaseUrl}/landing-applicants/stall-application`, // ✅ Use the new atomic endpoint
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(applicationPayload)
+          body: JSON.stringify(completeApplicationData),
         }
       );
 
-      const applicationResult = await applicationResponse.json();
+      console.log("Response Status:", response.status);
+      console.log("Response OK:", response.ok);
 
-      if (!applicationResult.success) {
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("API Error:", errorText);
+
+        // Try to parse the error response to get more details
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch (parseError) {
+          errorData = { message: errorText };
+        }
+
         throw new Error(
-          applicationResult.message || "Failed to create application"
+          `HTTP ${response.status}: ${JSON.stringify(errorData)}`
         );
       }
 
+      const result = await response.json();
+      console.log("Complete Application Result:", result);
+
+      if (!result.success) {
+        throw new Error(result.message || "Failed to submit stall application");
+      }
+
       return {
-        applicant: applicantResult,
-        application: applicationResult,
+        applicant: {
+          success: true,
+          data: {
+            applicant_id: result.data.applicant_id,
+            applicant_full_name: result.data.applicant_full_name,
+            applicant_contact_number: result.data.applicant_contact_number,
+          },
+        },
+        application: {
+          success: true,
+          data: {
+            application_id: result.data.application_id,
+            stall_id: result.data.stall_id,
+            application_status: result.data.application_status,
+          },
+        },
       };
     },
 
@@ -264,9 +282,8 @@ export default {
     },
 
     retrySubmission() {
-      // Reset loading state and retry the submission
-      this.loadingState = 'preparing';
-      this.loadingErrorMessage = '';
+      this.loadingState = "preparing";
+      this.loadingErrorMessage = "";
       this.handleOtherInfoNext(this.otherInfo);
     },
 
@@ -277,8 +294,8 @@ export default {
       this.businessInfo = null;
       this.otherInfo = null;
       this.isSubmitting = false;
-      this.loadingState = 'preparing';
-      this.loadingErrorMessage = '';
+      this.loadingState = "preparing";
+      this.loadingErrorMessage = "";
     },
   },
 };

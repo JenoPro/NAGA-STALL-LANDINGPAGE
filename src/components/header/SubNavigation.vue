@@ -54,7 +54,6 @@
 import AvailableStalls from "@/components/stalls/available_stalls/AvailableStalls.vue";
 import StallFilter from "@/components/stalls/filter/StallFilter.vue";
 
-// Import services
 import FetchService from "./SubNavigationComponents/fetch/FetchService.js";
 import DataTransformService from "./SubNavigationComponents/transforms/DataTransformService.js";
 import FilterService from "./SubNavigationComponents/filters/FilterService.js";
@@ -69,40 +68,32 @@ export default {
   },
   data() {
     return {
-      // Area management
       availableAreas: [],
       selectedArea: null,
       showStallsContainer: false,
 
-      // Filter management
       availableLocations: [],
       filteredStalls: [],
       currentFilters: FilterService.getInitialFilters(),
-      filterKey: 0, // For forcing component re-render
+      filterKey: 0,
 
-      // Loading states
       loading: false,
       filterLoading: false,
       stallsLoading: false,
 
-      // Error states
       error: null,
       stallsError: null,
 
-      // Overflow detection
       hasOverflow: false,
 
-      // Cleanup function for resize listener
       resizeCleanup: null,
     };
   },
 
   async mounted() {
     await this.fetchAreas();
-    // Check for overflow after areas are loaded and setup resize listener
     this.$nextTick(() => {
       this.checkOverflow();
-      // Setup resize listener with cleanup function
       this.resizeCleanup = UIHelperService.setupResizeListener(() => {
         this.checkOverflow();
       });
@@ -110,14 +101,12 @@ export default {
   },
 
   beforeUnmount() {
-    // Clean up resize listener
     if (this.resizeCleanup) {
       this.resizeCleanup();
     }
   },
 
   methods: {
-    // Check if content overflows and adjust layout accordingly
     checkOverflow() {
       this.$nextTick(() => {
         const container = this.$refs.scrollableContainer;
@@ -127,14 +116,12 @@ export default {
       });
     },
 
-    // Fetch available areas from backend
     async fetchAreas() {
       this.loading = true;
       this.error = null;
 
       try {
         this.availableAreas = await FetchService.fetchAreas();
-        // Check for overflow after areas are loaded
         this.$nextTick(() => {
           this.checkOverflow();
         });
@@ -146,7 +133,6 @@ export default {
       }
     },
 
-    // Handle area selection
     async handleAreaFilter(area) {
       const selectionResult = UIHelperService.handleAreaSelection(
         this.selectedArea, 
@@ -161,7 +147,6 @@ export default {
         this.resetFilters();
       }
 
-      // If area is selected, fetch locations and stalls
       if (this.selectedArea) {
         await Promise.all([
           this.fetchLocationsByArea(this.selectedArea),
@@ -170,7 +155,6 @@ export default {
       }
     },
 
-    // Fetch locations within an area
     async fetchLocationsByArea(area) {
       this.filterLoading = true;
 
@@ -178,13 +162,11 @@ export default {
         this.availableLocations = await FetchService.fetchLocationsByArea(area);
       } catch (error) {
         ErrorHandlingService.logError(error, 'fetchLocationsByArea', { area });
-        // Don't show error for locations, just log it
       } finally {
         this.filterLoading = false;
       }
     },
 
-    // Fetch stalls by area (initial load)
     async fetchStallsByArea(area) {
       this.stallsLoading = true;
       this.stallsError = null;
@@ -200,21 +182,18 @@ export default {
       }
     },
 
-    // Handle filter changes from StallFilter component
     async handleFilterChanged(filters) {
       this.currentFilters = FilterService.handleFilterChanged(this.currentFilters, filters);
       this.filterKey = UIHelperService.generateNewKey(this.filterKey);
       await this.applyFilters();
     },
 
-    // Handle search changes
     async handleSearchChanged(searchTerm) {
       this.currentFilters = FilterService.handleSearchChanged(this.currentFilters, searchTerm);
       this.filterKey = UIHelperService.generateNewKey(this.filterKey);
       await this.applyFilters();
     },
 
-    // Apply all current filters
     async applyFilters() {
       this.stallsLoading = true;
       this.stallsError = null;
@@ -239,7 +218,6 @@ export default {
       }
     },
 
-    // Reset filters
     resetFilters() {
       this.currentFilters = FilterService.resetFilters();
       this.filteredStalls = [];

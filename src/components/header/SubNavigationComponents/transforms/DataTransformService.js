@@ -26,7 +26,6 @@ class DataTransformService {
       priceType: stall.price_type,
       status: stall.status,
       createdAt: stall.created_at,
-      // Manager info
       managerName: stall.manager_first_name
         ? `${stall.manager_first_name} ${stall.manager_last_name}`
         : "Unknown",
@@ -90,5 +89,4 @@ class DataTransformService {
   }
 }
 
-// Export a singleton instance
 export default new DataTransformService();

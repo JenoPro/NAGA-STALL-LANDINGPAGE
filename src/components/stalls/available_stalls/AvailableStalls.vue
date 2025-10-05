@@ -152,12 +152,10 @@ export default {
   },
   watch: {
     filteredStalls() {
-      // Reset to first page when stalls change
       this.currentPage = 1;
     }
   },
   methods: {
-    // Handle image loading errors
     handleImageError(event) {
       event.target.src = "https://oldspitalfieldsmarket.com/cms/2017/10/OSM_FP_Stall_sq.jpg";
     },
@@ -172,7 +170,6 @@ export default {
       this.selectedStall = null;
     },
 
-    // Pagination methods
     nextPage() {
       if (this.currentPage < this.totalPages) {
         this.currentPage++;

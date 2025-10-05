@@ -27,7 +27,6 @@ class UIHelperService {
    * @returns {Object} New state for area selection
    */
   handleAreaSelection(selectedArea, clickedArea, showStallsContainer) {
-    // If same area is clicked and container is open, close it
     if (selectedArea === clickedArea && showStallsContainer) {
       console.log(`Closing stalls container for area: ${clickedArea}`);
       return {
@@ -36,7 +35,6 @@ class UIHelperService {
         shouldReset: true
       };
     } else {
-      // Set the area and show container
       console.log(`Opening stalls container for area: ${clickedArea}`);
       return {
         selectedArea: clickedArea,
@@ -55,7 +53,6 @@ class UIHelperService {
     console.log("Setting up resize listener for overflow detection");
     
     const handleResize = () => {
-      // Debounce the resize handler to improve performance
       clearTimeout(this.resizeTimeout);
       this.resizeTimeout = setTimeout(() => {
         checkOverflowCallback();
@@ -64,7 +61,6 @@ class UIHelperService {
 
     window.addEventListener('resize', handleResize);
     
-    // Return cleanup function
     return () => {
       console.log("Cleaning up resize listener");
       clearTimeout(this.resizeTimeout);
@@ -108,14 +104,12 @@ class UIHelperService {
     const elementRect = element.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
 
-    // Check if element is fully visible
     const isVisible = (
       elementRect.left >= containerRect.left &&
       elementRect.right <= containerRect.right
     );
 
     if (!isVisible) {
-      // Calculate scroll position to center the element
       const scrollLeft = element.offsetLeft - (container.clientWidth / 2) + (element.clientWidth / 2);
       
       container.scrollTo({
@@ -148,5 +142,4 @@ class UIHelperService {
   }
 }
 
-// Export a singleton instance
 export default new UIHelperService();

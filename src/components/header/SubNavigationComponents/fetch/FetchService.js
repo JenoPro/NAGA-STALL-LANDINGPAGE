@@ -120,13 +120,10 @@ class FetchService {
    */
   async fetchFilteredStalls(selectedArea, filters) {
     try {
-      // Build query parameters
       const params = new URLSearchParams();
 
-      // Always include the selected area
       params.append("area", selectedArea);
 
-      // Add other filters if they have values
       Object.keys(filters).forEach((key) => {
         const value = filters[key];
         if (value && value.toString().trim() !== "") {
@@ -165,5 +162,4 @@ class FetchService {
   }
 }
 
-// Export a singleton instance
 export default new FetchService();

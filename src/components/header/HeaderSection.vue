@@ -59,7 +59,6 @@ export default {
     },
   },
   mounted() {
-    // Automatically show modal when component is mounted
     this.showOrdinanceModal();
   },
 };

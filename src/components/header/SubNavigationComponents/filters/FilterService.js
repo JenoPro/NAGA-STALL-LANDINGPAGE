@@ -109,12 +109,10 @@ class FilterService {
   createSearchParams(selectedArea, filters) {
     const params = new URLSearchParams();
     
-    // Always include the selected area
     if (selectedArea) {
       params.append("area", selectedArea);
     }
 
-    // Add other filters if they have values
     const validatedFilters = this.validateFilters(filters);
     Object.entries(validatedFilters).forEach(([key, value]) => {
       params.append(key, value);
@@ -124,5 +122,4 @@ class FilterService {
   }
 }
 
-// Export a singleton instance
 export default new FilterService();

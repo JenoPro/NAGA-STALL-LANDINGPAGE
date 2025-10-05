@@ -12,7 +12,6 @@ class ErrorHandlingService {
   handleNetworkError(error) {
     console.error("Handling network error:", error);
 
-    // Handle specific error types
     if (this.isNetworkError(error)) {
       return "Network connection failed. Please check your internet connection.";
     }
@@ -33,7 +32,6 @@ class ErrorHandlingService {
       return "Authentication failed. Please check your credentials.";
     }
 
-    // Return the original error message if it's user-friendly, otherwise a generic message
     return error.message || "An unexpected error occurred";
   }
 
@@ -137,8 +135,6 @@ class ErrorHandlingService {
     const detailedError = this.createDetailedError(error, context, additionalData);
     console.error(`Error in ${context}:`, detailedError);
 
-    // In a real application, you might want to send this to an error tracking service
-    // Example: ErrorTrackingService.logError(detailedError);
   }
 
   /**
@@ -184,10 +180,8 @@ class ErrorHandlingService {
    * @returns {boolean} True if the error is retryable
    */
   isRetryableError(error) {
-    // Network errors and server errors are usually retryable
     return this.isNetworkError(error) || this.isServerError(error) || this.isTimeoutError(error);
   }
 }
 
-// Export a singleton instance
 export default new ErrorHandlingService();

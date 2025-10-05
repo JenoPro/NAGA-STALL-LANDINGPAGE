@@ -105,7 +105,6 @@ export default {
                 return;
             }
 
-            // Additional validation for "Other" selection
             if (this.natureOfBusiness === 'Other' && !this.otherBusinessType.trim()) {
                 console.error("Please specify your business type.");
                 return;
@@ -116,7 +115,6 @@ export default {
                 return;
             }
 
-            // Use the specified business type if "Other" is selected
             const finalBusinessType = this.natureOfBusiness === 'Other'
                 ? this.otherBusinessType.trim()
                 : this.natureOfBusiness;
