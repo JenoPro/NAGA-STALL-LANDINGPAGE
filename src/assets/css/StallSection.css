@@ -15,9 +15,10 @@
 }
 
 .hero-image {
-  width: 100%;
+  width: 120%;
   height: 100%;
   object-fit: cover;
+  transform: translateX(-0%);
   filter: brightness(1.05) contrast(1.1);
 }
 
@@ -29,9 +30,9 @@
   bottom: 0;
   background: linear-gradient(to right,
       rgb(255, 255, 255) 0%,
-      rgb(255, 255, 255) 35%,
-      rgba(255, 255, 255, 0.8) 50%,
-      rgba(255, 255, 255, 0) 70%,
+      rgb(255, 255, 255) 25%,
+      rgba(255, 255, 255, 0.8) 40%,
+      rgba(255, 255, 255, 0) 60%,
       transparent 100%);
 }
 
@@ -74,6 +75,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .highlight::after {

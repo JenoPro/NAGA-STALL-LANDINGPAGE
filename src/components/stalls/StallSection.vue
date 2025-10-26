@@ -1,7 +1,7 @@
 <template>
   <section class="hero-section">
     <div class="hero-background">
-      <img :src="require('@/assets/market.png')" alt="Naga People's Mall" class="hero-image" />
+      <img :src="require('@/assets/stallbackground.png')" alt="Naga People's Mall" class="hero-image" />
       <div class="hero-overlay"></div>
     </div>
     <div class="hero-content">
