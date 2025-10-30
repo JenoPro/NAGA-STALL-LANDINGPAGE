@@ -1,37 +1,41 @@
 <template>
   <div class="sub-navigation">
     <!-- Loading State -->
-    <div v-if="loading" class="loading-areas">
-      <p>Loading areas...</p>
+    <div v-if="loading" class="loading-branches">
+      <p>Loading branches...</p>
     </div>
 
     <!-- Error State -->
-    <div v-else-if="error" class="error-areas">
+    <div v-else-if="error" class="error-branches">
       <p>{{ error }}</p>
-      <button @click="fetchAreas" class="retry-btn">Try Again</button>
+      <button @click="fetchBranches" class="retry-btn">Try Again</button>
     </div>
 
-    <!-- Area Navigation -->
+    <!-- Branch Navigation -->
     <div v-else class="sub-nav-container">
-      <div ref="scrollableContainer" class="scrollable-container" :class="{ 'overflow-scrolling': hasOverflow }">
+      <div
+        ref="scrollableContainer"
+        class="scrollable-container"
+        :class="{ 'overflow-scrolling': hasOverflow }"
+      >
         <button
-          v-for="area in availableAreas"
-          :key="area.area"
+          v-for="branch in availableBranches"
+          :key="branch.branch"
           class="sub-nav-item"
-          :class="{ active: selectedArea === area.area }"
-          @click="handleAreaFilter(area.area)"
+          :class="{ active: selectedBranch === branch.branch }"
+          @click="handleBranchFilter(branch.branch)"
         >
-          {{ area.area }}
+          {{ branch.branch }}
         </button>
       </div>
     </div>
 
     <!-- Stalls Container with Filter -->
     <transition name="fade" mode="out-in">
-      <div v-if="showStallsContainer && selectedArea" class="stalls-container">
+      <div v-if="showStallsContainer && selectedBranch" class="stalls-container">
         <!-- Filter Container -->
         <StallFilter
-          :selectedArea="selectedArea"
+          :selectedBranch="selectedBranch"
           :availableLocations="availableLocations"
           :loading="filterLoading"
           @filter-changed="handleFilterChanged"
@@ -68,8 +72,8 @@ export default {
   },
   data() {
     return {
-      availableAreas: [],
-      selectedArea: null,
+      availableBranches: [],
+      selectedBranch: null,
       showStallsContainer: false,
 
       availableLocations: [],
@@ -91,7 +95,7 @@ export default {
   },
 
   async mounted() {
-    await this.fetchAreas();
+    await this.fetchBranches();
     this.$nextTick(() => {
       this.checkOverflow();
       this.resizeCleanup = UIHelperService.setupResizeListener(() => {
@@ -116,66 +120,66 @@ export default {
       });
     },
 
-    async fetchAreas() {
+    async fetchBranches() {
       this.loading = true;
       this.error = null;
 
       try {
-        this.availableAreas = await FetchService.fetchAreas();
+        this.availableBranches = await FetchService.fetchBranches();
         this.$nextTick(() => {
           this.checkOverflow();
         });
       } catch (error) {
-        ErrorHandlingService.logError(error, 'fetchAreas');
+        ErrorHandlingService.logError(error, "fetchBranches");
         this.error = ErrorHandlingService.handleNetworkError(error);
       } finally {
         this.loading = false;
       }
     },
 
-    async handleAreaFilter(area) {
-      const selectionResult = UIHelperService.handleAreaSelection(
-        this.selectedArea, 
-        area, 
+    async handleBranchFilter(branch) {
+      const selectionResult = UIHelperService.handleBranchSelection(
+        this.selectedBranch,
+        branch,
         this.showStallsContainer
       );
 
-      this.selectedArea = selectionResult.selectedArea;
+      this.selectedBranch = selectionResult.selectedBranch;
       this.showStallsContainer = selectionResult.showStallsContainer;
 
       if (selectionResult.shouldReset) {
         this.resetFilters();
       }
 
-      if (this.selectedArea) {
+      if (this.selectedBranch) {
         await Promise.all([
-          this.fetchLocationsByArea(this.selectedArea),
-          this.fetchStallsByArea(this.selectedArea),
+          this.fetchLocationsByBranch(this.selectedBranch),
+          this.fetchStallsByBranch(this.selectedBranch),
         ]);
       }
     },
 
-    async fetchLocationsByArea(area) {
+    async fetchLocationsByBranch(branch) {
       this.filterLoading = true;
 
       try {
-        this.availableLocations = await FetchService.fetchLocationsByArea(area);
+        this.availableLocations = await FetchService.fetchLocationsByBranch(branch);
       } catch (error) {
-        ErrorHandlingService.logError(error, 'fetchLocationsByArea', { area });
+        ErrorHandlingService.logError(error, "fetchLocationsByBranch", { branch });
       } finally {
         this.filterLoading = false;
       }
     },
 
-    async fetchStallsByArea(area) {
+    async fetchStallsByBranch(branch) {
       this.stallsLoading = true;
       this.stallsError = null;
 
       try {
-        const stallsData = await FetchService.fetchStallsByArea(area);
+        const stallsData = await FetchService.fetchStallsByBranch(branch);
         this.filteredStalls = DataTransformService.transformStallsArray(stallsData);
       } catch (error) {
-        ErrorHandlingService.logError(error, 'fetchStallsByArea', { area });
+        ErrorHandlingService.logError(error, "fetchStallsByBranch", { branch });
         this.stallsError = ErrorHandlingService.handleNetworkError(error);
       } finally {
         this.stallsLoading = false;
@@ -183,13 +187,19 @@ export default {
     },
 
     async handleFilterChanged(filters) {
-      this.currentFilters = FilterService.handleFilterChanged(this.currentFilters, filters);
+      this.currentFilters = FilterService.handleFilterChanged(
+        this.currentFilters,
+        filters
+      );
       this.filterKey = UIHelperService.generateNewKey(this.filterKey);
       await this.applyFilters();
     },
 
     async handleSearchChanged(searchTerm) {
-      this.currentFilters = FilterService.handleSearchChanged(this.currentFilters, searchTerm);
+      this.currentFilters = FilterService.handleSearchChanged(
+        this.currentFilters,
+        searchTerm
+      );
       this.filterKey = UIHelperService.generateNewKey(this.filterKey);
       await this.applyFilters();
     },
@@ -199,18 +209,21 @@ export default {
       this.stallsError = null;
 
       try {
-        console.log("Applying filters:", FilterService.getFilterSummary(this.currentFilters));
+        console.log(
+          "Applying filters:",
+          FilterService.getFilterSummary(this.currentFilters)
+        );
 
         const stallsData = await FetchService.fetchFilteredStalls(
-          this.selectedArea, 
+          this.selectedBranch,
           this.currentFilters
         );
-        
+
         this.filteredStalls = DataTransformService.transformStallsArray(stallsData);
       } catch (error) {
-        ErrorHandlingService.logError(error, 'applyFilters', { 
-          area: this.selectedArea,
-          filters: this.currentFilters 
+        ErrorHandlingService.logError(error, "applyFilters", {
+          branch: this.selectedBranch,
+          filters: this.currentFilters,
         });
         this.stallsError = ErrorHandlingService.handleNetworkError(error);
       } finally {

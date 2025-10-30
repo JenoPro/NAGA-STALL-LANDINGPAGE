@@ -248,7 +248,7 @@
 export default {
   name: "StallFilter",
   props: {
-    selectedArea: {
+    selectedBranch: {
       type: String,
       required: true,
     },
@@ -282,7 +282,7 @@ export default {
     },
   },
   watch: {
-    selectedArea() {
+    selectedBranch() {
       this.clearAllFilters();
     },
   },

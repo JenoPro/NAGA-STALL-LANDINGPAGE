@@ -1,22 +1,20 @@
-/**
- * FetchService - Handles all API calls for the SubNavigation component
- * Contains methods for fetching areas, locations, and stalls
- */
-
 class FetchService {
   constructor() {
     this.apiBaseUrl = process.env.VUE_APP_API_URL || "http://localhost:3001";
   }
 
   /**
-   * Fetch available areas from backend
-   * @returns {Promise<Array>} Array of available areas
+   * Fetch available branches from backend
+   * @returns {Promise<Array>} Array of available branches
    */
-  async fetchAreas() {
+  async fetchBranches() {
     try {
-      console.log("Fetching areas from:", `${this.apiBaseUrl}/api/stalls/areas`);
+      console.log(
+        "Fetching branches from:",
+        `${this.apiBaseUrl}/api/stalls/branches`
+      );
 
-      const response = await fetch(`${this.apiBaseUrl}/api/stalls/areas`, {
+      const response = await fetch(`${this.apiBaseUrl}/api/stalls/branches`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -28,29 +26,31 @@ class FetchService {
       }
 
       const result = await response.json();
-      console.log("Areas API Response:", result);
+      console.log("Branches API Response:", result);
 
       if (result.success) {
-        console.log(`Successfully loaded ${result.data.length} areas`);
+        console.log(`Successfully loaded ${result.data.length} branches`);
         return result.data;
       } else {
-        throw new Error(result.message || "Failed to fetch areas");
+        throw new Error(result.message || "Failed to fetch branches");
       }
     } catch (error) {
-      console.error("Error fetching areas:", error);
+      console.error("Error fetching branches:", error);
       throw error;
     }
   }
 
   /**
-   * Fetch locations within an area
-   * @param {string} area - The area to fetch locations for
-   * @returns {Promise<Array>} Array of locations in the area
+   * Fetch locations within a branch
+   * @param {string} branch - The branch to fetch locations for
+   * @returns {Promise<Array>} Array of locations in the branch
    */
-  async fetchLocationsByArea(area) {
+  async fetchLocationsByBranch(branch) {
     try {
       const response = await fetch(
-        `${this.apiBaseUrl}/api/stalls/locations?area=${encodeURIComponent(area)}`,
+        `${this.apiBaseUrl}/api/stalls/locations?branch=${encodeURIComponent(
+          branch
+        )}`,
         {
           method: "GET",
           headers: {
@@ -66,7 +66,7 @@ class FetchService {
       const result = await response.json();
 
       if (result.success) {
-        console.log(`Loaded ${result.data.length} locations for ${area}`);
+        console.log(`Loaded ${result.data.length} locations for ${branch}`);
         return result.data;
       } else {
         throw new Error(result.message || "Failed to fetch locations");
@@ -78,14 +78,16 @@ class FetchService {
   }
 
   /**
-   * Fetch stalls by area (initial load)
-   * @param {string} area - The area to fetch stalls for
-   * @returns {Promise<Array>} Array of stalls in the area
+   * Fetch stalls by branch (initial load)
+   * @param {string} branch - The branch to fetch stalls for
+   * @returns {Promise<Array>} Array of stalls in the branch
    */
-  async fetchStallsByArea(area) {
+  async fetchStallsByBranch(branch) {
     try {
       const response = await fetch(
-        `${this.apiBaseUrl}/api/stalls/by-area?area=${encodeURIComponent(area)}`,
+        `${this.apiBaseUrl}/api/stalls/by-branch?branch=${encodeURIComponent(
+          branch
+        )}`,
         {
           method: "GET",
           headers: {
@@ -101,7 +103,7 @@ class FetchService {
       const result = await response.json();
 
       if (result.success) {
-        console.log(`Loaded ${result.data.length} stalls for ${area}`);
+        console.log(`Loaded ${result.data.length} stalls for ${branch}`);
         return result.data;
       } else {
         throw new Error(result.message || "Failed to fetch stalls");
@@ -114,15 +116,15 @@ class FetchService {
 
   /**
    * Apply filters to fetch filtered stalls
-   * @param {string} selectedArea - The currently selected area
+   * @param {string} selectedBranch - The currently selected branch
    * @param {Object} filters - The filters to apply
    * @returns {Promise<Array>} Array of filtered stalls
    */
-  async fetchFilteredStalls(selectedArea, filters) {
+  async fetchFilteredStalls(selectedBranch, filters) {
     try {
       const params = new URLSearchParams();
 
-      params.append("area", selectedArea);
+      params.append("branch", selectedBranch);
 
       Object.keys(filters).forEach((key) => {
         const value = filters[key];

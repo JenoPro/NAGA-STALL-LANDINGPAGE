@@ -6,7 +6,11 @@
         <!-- Left side: Logo and text -->
         <div class="header-left">
           <div class="logo-section">
-            <img :src="require('@/assets/naga-city-logo.png')" alt="Naga City Logo" class="logo" />
+            <img
+              :src="require('@/assets/naga-city-logo.png')"
+              alt="Naga City Logo"
+              class="logo"
+            />
             <div class="header-text">
               <div class="republic-text">Republic of the Philippines</div>
               <div class="text-divider"></div>
@@ -31,19 +35,22 @@
     <SubNavigation />
 
     <!-- Ordinance Modal Component -->
-    <OrdinanceSection :isVisible="isOrdinanceModalVisible" @close-modal="closeOrdinanceModal" />
+    <OrdinanceSection
+      :isVisible="isOrdinanceModalVisible"
+      @close-modal="closeOrdinanceModal"
+    />
   </div>
 </template>
 
 <script>
-import SubNavigation from './SubNavigation.vue';
-import OrdinanceSection from './Ordinance/OrinanceSection.vue';
+import SubNavigation from "./SubNavigation.vue";
+import OrdinanceSection from "./Ordinance/OrinanceSection.vue";
 
 export default {
   name: "HeaderSection",
   components: {
     SubNavigation,
-    OrdinanceSection
+    OrdinanceSection,
   },
   data() {
     return {
@@ -58,9 +65,10 @@ export default {
       this.isOrdinanceModalVisible = false;
     },
   },
-  mounted() {
-    this.showOrdinanceModal();
-  },
+  // Removed mounted hook to prevent automatic popup on page load
+  // mounted() {
+  //   this.showOrdinanceModal();
+  // },
 };
 </script>
 

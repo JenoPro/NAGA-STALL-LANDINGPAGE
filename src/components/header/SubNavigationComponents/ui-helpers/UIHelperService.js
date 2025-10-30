@@ -14,8 +14,11 @@ class UIHelperService {
       return false;
     }
 
-    const hasOverflow = scrollableContainer.scrollWidth > scrollableContainer.clientWidth;
-    console.log(`Overflow check: ${hasOverflow ? 'Content overflows' : 'Content fits'}`);
+    const hasOverflow =
+      scrollableContainer.scrollWidth > scrollableContainer.clientWidth;
+    console.log(
+      `Overflow check: ${hasOverflow ? "Content overflows" : "Content fits"}`
+    );
     return hasOverflow;
   }
 
@@ -32,14 +35,39 @@ class UIHelperService {
       return {
         selectedArea: null,
         showStallsContainer: false,
-        shouldReset: true
+        shouldReset: true,
       };
     } else {
       console.log(`Opening stalls container for area: ${clickedArea}`);
       return {
         selectedArea: clickedArea,
         showStallsContainer: true,
-        shouldReset: true
+        shouldReset: true,
+      };
+    }
+  }
+
+  /**
+   * Handle branch selection logic
+   * @param {string} selectedBranch - Currently selected branch
+   * @param {string} clickedBranch - The branch that was clicked
+   * @param {boolean} showStallsContainer - Current state of stalls container visibility
+   * @returns {Object} New state for branch selection
+   */
+  handleBranchSelection(selectedBranch, clickedBranch, showStallsContainer) {
+    if (selectedBranch === clickedBranch && showStallsContainer) {
+      console.log(`Closing stalls container for branch: ${clickedBranch}`);
+      return {
+        selectedBranch: null,
+        showStallsContainer: false,
+        shouldReset: true,
+      };
+    } else {
+      console.log(`Opening stalls container for branch: ${clickedBranch}`);
+      return {
+        selectedBranch: clickedBranch,
+        showStallsContainer: true,
+        shouldReset: true,
       };
     }
   }
@@ -51,7 +79,7 @@ class UIHelperService {
    */
   setupResizeListener(checkOverflowCallback) {
     console.log("Setting up resize listener for overflow detection");
-    
+
     const handleResize = () => {
       clearTimeout(this.resizeTimeout);
       this.resizeTimeout = setTimeout(() => {
@@ -59,12 +87,12 @@ class UIHelperService {
       }, 100);
     };
 
-    window.addEventListener('resize', handleResize);
-    
+    window.addEventListener("resize", handleResize);
+
     return () => {
       console.log("Cleaning up resize listener");
       clearTimeout(this.resizeTimeout);
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }
 
@@ -75,7 +103,7 @@ class UIHelperService {
    */
   getScrollableContainerClasses(hasOverflow) {
     return {
-      'overflow-scrolling': hasOverflow
+      "overflow-scrolling": hasOverflow,
     };
   }
 
@@ -87,7 +115,7 @@ class UIHelperService {
    */
   getSubNavItemClasses(selectedArea, itemArea) {
     return {
-      active: selectedArea === itemArea
+      active: selectedArea === itemArea,
     };
   }
 
@@ -104,17 +132,19 @@ class UIHelperService {
     const elementRect = element.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
 
-    const isVisible = (
+    const isVisible =
       elementRect.left >= containerRect.left &&
-      elementRect.right <= containerRect.right
-    );
+      elementRect.right <= containerRect.right;
 
     if (!isVisible) {
-      const scrollLeft = element.offsetLeft - (container.clientWidth / 2) + (element.clientWidth / 2);
-      
+      const scrollLeft =
+        element.offsetLeft -
+        container.clientWidth / 2 +
+        element.clientWidth / 2;
+
       container.scrollTo({
         left: scrollLeft,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
 
       console.log(`Scrolled to element at position: ${scrollLeft}`);
@@ -127,8 +157,8 @@ class UIHelperService {
    */
   getTransitionConfig() {
     return {
-      name: 'fade',
-      mode: 'out-in'
+      name: "fade",
+      mode: "out-in",
     };
   }
 

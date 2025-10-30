@@ -10,19 +10,33 @@ class DataTransformService {
    * @returns {Object} Transformed stall data for frontend consumption
    */
   transformStallData(stall) {
+    // If the stall data is already in frontend format (from new backend), use it as-is
+    // Otherwise, transform from old backend format
+    const isAlreadyFormatted = stall.stallNumber && stall.branch && stall.branchLocation;
+    
+    if (isAlreadyFormatted) {
+      // Data is already properly formatted by backend
+      return {
+        ...stall,
+        imageUrl: stall.imageUrl || this.getDefaultImage(stall.section),
+        managerName: stall.managerName || "Unknown"
+      };
+    }
+
+    // Transform from old backend format
     return {
-      id: stall.stall_id,
-      stallNumber: stall.stall_no,
-      price: this.formatPrice(stall.rental_price, stall.price_type),
+      id: stall.stall_id || stall.id,
+      stallNumber: stall.stall_no || stall.stallNumber,
+      price: stall.price || this.formatPrice(stall.rental_price, stall.price_type),
       floor: stall.floor,
       section: stall.section,
-      dimensions: stall.size || "3x3 meters",
-      location: stall.stall_location,
-      area: stall.area,
-      branchLocation: stall.branch_location,
+      dimensions: stall.size || stall.dimensions || "3x3 meters",
+      location: stall.stall_location || stall.location,
+      branch: stall.branch_name || stall.branch,
+      branchLocation: stall.branch_location || stall.branchLocation,
       description: stall.description,
-      image: stall.stall_image || this.getDefaultImage(stall.section),
-      isAvailable: stall.status === "Active",
+      imageUrl: stall.stall_image || stall.imageUrl || this.getDefaultImage(stall.section),
+      isAvailable: stall.status === "Active" || stall.isAvailable,
       priceType: stall.price_type,
       status: stall.status,
       createdAt: stall.created_at,
@@ -39,7 +53,14 @@ class DataTransformService {
    * @returns {string} Formatted price string
    */
   formatPrice(price, priceType) {
-    const formattedPrice = `${parseFloat(price).toLocaleString()} Php`;
+    if (!price || isNaN(price) || price <= 0) {
+      return "Contact for pricing";
+    }
+
+    const formattedPrice = `₱${parseFloat(price).toLocaleString('en-PH', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    })}`;
 
     switch (priceType) {
       case "Raffle":
@@ -48,7 +69,7 @@ class DataTransformService {
         return `${formattedPrice} Min. / Auction`;
       case "Fixed Price":
       default:
-        return `${formattedPrice} / Monthly`;
+        return `${formattedPrice}/month`;
     }
   }
 

@@ -47,7 +47,7 @@
                   </button>
                 </div>
                 <p class="location-info">
-                  <strong>{{ stall.area }}</strong> - {{ stall.branchLocation }}
+                  <strong>{{ stall.branch }}</strong> - {{ stall.branchLocation }}
                 </p>
                 <p class="stall-description">{{ stall.description }}</p>
                 <div v-if="stall.managerName" class="manager-info">
